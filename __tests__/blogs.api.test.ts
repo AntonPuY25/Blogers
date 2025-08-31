@@ -27,6 +27,7 @@ describe("Blogs tests", () => {
             websiteUrl: "https://samurai.it-test-incubator.io"
         };
 
+
         await request(app)
             .post("/blogs")
             .set('Authorization', `Basic ${basicAuthToken}`)
@@ -37,10 +38,21 @@ describe("Blogs tests", () => {
             .get("/blogs")
             .expect(200);
 
+
         expect(Array.isArray(getBlogs.body)).toBeTruthy();
         expect(getBlogs.body[0]?.name).toBe(testNewBlogData.name);
         expect(getBlogs.body[0]?.description).toBe(testNewBlogData.description);
         expect(getBlogs.body[0]?.websiteUrl).toBe(testNewBlogData.websiteUrl);
+
+        const getCurrentBlog = await request(app)
+            .get(`/blogs/${testNewBlogData.id}`)
+            .expect(200);
+
+
+
+        expect(getCurrentBlog.body?.name).toBe(testNewBlogData.name);
+        expect(getCurrentBlog.body?.description).toBe(testNewBlogData.description);
+        expect(getCurrentBlog.body?.websiteUrl).toBe(testNewBlogData.websiteUrl);
 
     });
 

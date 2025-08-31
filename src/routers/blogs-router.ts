@@ -1,8 +1,8 @@
 import {Request, Response, Router} from "express";
 
 import {blogsRepository} from "../repositories/blogs-repository";
-import {RequestWithBody} from "../types";
-import {CreateBlogType} from "../repositories/types";
+import {RequestWithBody, RequestWithParams} from "../types";
+import {CreateBlogType, GetCurrentBlogType} from "../repositories/types";
 import {superAdminGuardMiddleware} from "../middlewares/auth-middleware";
 import {
     descriptionBlogMaxLengthValidate,
@@ -29,4 +29,17 @@ blogsRouter.post("/",
 
     res.status(201).send(createBlog);
 });
+
+blogsRouter.get("/:blogId",
+    (req:RequestWithParams<GetCurrentBlogType>, res: Response) => {
+        const currentBlogId = req.params.blogId;
+
+        const currentBlog = blogsRepository.getCurrentBlog({ blogId: currentBlogId });
+
+        if(!currentBlog){
+           return res.sendStatus(404)
+        }
+
+        res.status(200).send(currentBlog);
+    });
 

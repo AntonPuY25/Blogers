@@ -1,13 +1,13 @@
 import {DBBlogs} from "../db/blog-state";
-import {CreateBlogType} from "./types";
+import {CreateBlogType, GetCurrentBlogType} from "./types";
 
 export const blogsRepository = {
     getAllBlogs:()=> DBBlogs,
 
-    createBlog: ({name,websiteUrl,description}:CreateBlogType)=>{
+    createBlog: ({name,websiteUrl,description,id}:CreateBlogType)=>{
 
         const newBlog = {
-            id: new Date().getMilliseconds().toString(),
+            id,
             name,
             description,
             websiteUrl,
@@ -16,6 +16,16 @@ export const blogsRepository = {
         DBBlogs.push(newBlog);
 
         return newBlog;
+    },
+
+    getCurrentBlog: ({blogId}:GetCurrentBlogType)=>{
+        const currentBlog = DBBlogs.find(({id})=>id === blogId);
+
+        if(!currentBlog){
+            return null;
+        }
+
+        return currentBlog;
     }
 
 }
