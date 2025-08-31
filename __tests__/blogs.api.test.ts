@@ -99,6 +99,18 @@ describe("Blogs tests", () => {
         expect(getCurrentAfterUpdateBlog.body?.description).toBe(testNewBlogDataForUpdate.description);
         expect(getCurrentAfterUpdateBlog.body?.websiteUrl).toBe(testNewBlogDataForUpdate.websiteUrl);
 
+            await request(app)
+            .delete(`/blogs/${testNewBlogData.id}`)
+            .set('Authorization', `Basic ${basicAuthToken}`)
+            .expect(204);
+
+        const getBlogs = await request(app)
+            .get("/blogs")
+            .expect(200);
+
+
+        expect(getBlogs.body.length === 0).toBeFalsy();
+
     })
 
 });

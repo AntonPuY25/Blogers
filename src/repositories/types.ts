@@ -9,6 +9,10 @@ export interface GetCurrentBlogType {
     blogId?: string;
 }
 
+export interface DeleteCurrentBlogType {
+    blogId: string;
+}
+
 export interface UpdatedBlogDataType extends Omit<CreateBlogType, 'id'> {};
 
 export interface UpdateBlogType  extends UpdatedBlogDataType, GetCurrentBlogType {}

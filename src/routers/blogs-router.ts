@@ -54,9 +54,21 @@ blogsRouter.put("/:blogId",
     (req:RequestWithBodyAndParams<GetCurrentBlogType,UpdatedBlogDataType>, res: Response) => {
         const currentBlogId = req.params.blogId || '';
 
-        console.log(currentBlogId,'currentBlogId')
-
         const currentBlog = blogsRepository.updateBlog({ blogId: currentBlogId , ...req.body});
+
+        if(!currentBlog){
+            return res.sendStatus(404)
+        }
+
+        res.sendStatus(204)
+    });
+
+blogsRouter.delete("/:blogId",
+    superAdminGuardMiddleware,
+    (req:RequestWithParams<GetCurrentBlogType>, res: Response) => {
+        const currentBlogId = req.params.blogId || '';
+
+        const currentBlog = blogsRepository.deleteBlog({ blogId: currentBlogId});
 
         if(!currentBlog){
             return res.sendStatus(404)

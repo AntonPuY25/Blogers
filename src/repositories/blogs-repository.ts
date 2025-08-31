@@ -1,5 +1,5 @@
 import {DBBlogs} from "../db/blog-state";
-import {CreateBlogType, GetCurrentBlogType, UpdateBlogType} from "./types";
+import {CreateBlogType, DeleteCurrentBlogType, GetCurrentBlogType, UpdateBlogType} from "./types";
 
 export const blogsRepository = {
     getAllBlogs:()=> DBBlogs,
@@ -48,5 +48,18 @@ export const blogsRepository = {
 
         return newBlog;
     },
+
+    deleteBlog: ({blogId}:DeleteCurrentBlogType)=>{
+        const currentBlogIndex = DBBlogs.findIndex(({id})=>id === blogId);
+
+        if(currentBlogIndex === -1){
+            return null;
+        }
+
+        DBBlogs.splice(currentBlogIndex, 1);
+
+        return true;
+    },
+
 
 }
