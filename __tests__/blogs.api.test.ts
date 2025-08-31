@@ -3,6 +3,7 @@ import express from "express";
 import {setupApp} from "../src/app";
 import {BlogType} from "../src/db/types";
 import {ADMIN_USERNAME, ADMIN_PASSWORD} from "../src/middlewares/auth-middleware";
+import {UpdateBlogType, UpdatedBlogDataType} from "../src/repositories/types";
 
 describe("Blogs tests", () => {
     const app = express();
@@ -12,11 +13,9 @@ describe("Blogs tests", () => {
     // Создаем Basic auth токен
     const basicAuthToken = Buffer.from(`${ADMIN_USERNAME}:${ADMIN_PASSWORD}`).toString('base64');
 
-
     beforeAll(async () => {
         await request(app).delete("/testing/all-data").expect(204);
     });
-
 
     it(`should create new blog and get it'`, async () => {
 
@@ -26,7 +25,6 @@ describe("Blogs tests", () => {
             description: 'Description test',
             websiteUrl: "https://samurai.it-test-incubator.io"
         };
-
 
         await request(app)
             .post("/blogs")
@@ -55,5 +53,52 @@ describe("Blogs tests", () => {
         expect(getCurrentBlog.body?.websiteUrl).toBe(testNewBlogData.websiteUrl);
 
     });
+
+    it(`should update new blog and get it'`, async () => {
+
+        const testNewBlogData:BlogType = {
+            id: new Date().getMilliseconds().toString(),
+            name: "Blog test",
+            description: 'Description test',
+            websiteUrl: "https://samurai.it-test-incubator.io"
+        };
+
+        const testNewBlogDataForUpdate:UpdatedBlogDataType = {
+            name: 'Updated name',
+            description: 'Updated description',
+            websiteUrl: "https://samurai.it-test-incubator.io"
+        };
+
+
+        await request(app)
+            .post("/blogs")
+            .set('Authorization', `Basic ${basicAuthToken}`)
+            .send(testNewBlogData)
+            .expect(201)
+
+        const getCurrentBlog = await request(app)
+            .get(`/blogs/${testNewBlogData.id}`)
+            .expect(200);
+
+        expect(getCurrentBlog.body?.name).toBe(testNewBlogData.name);
+        expect(getCurrentBlog.body?.description).toBe(testNewBlogData.description);
+        expect(getCurrentBlog.body?.websiteUrl).toBe(testNewBlogData.websiteUrl);
+
+
+       await request(app)
+            .put(`/blogs/${testNewBlogData.id}`)
+            .set('Authorization', `Basic ${basicAuthToken}`)
+            .send(testNewBlogDataForUpdate)
+            .expect(204);
+
+        const getCurrentAfterUpdateBlog = await request(app)
+            .get(`/blogs/${testNewBlogData.id}`)
+            .expect(200);
+
+        expect(getCurrentAfterUpdateBlog.body?.name).toBe(testNewBlogDataForUpdate.name);
+        expect(getCurrentAfterUpdateBlog.body?.description).toBe(testNewBlogDataForUpdate.description);
+        expect(getCurrentAfterUpdateBlog.body?.websiteUrl).toBe(testNewBlogDataForUpdate.websiteUrl);
+
+    })
 
 });

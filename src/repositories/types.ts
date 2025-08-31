@@ -6,5 +6,9 @@ export interface CreateBlogType {
 }
 
 export interface GetCurrentBlogType {
-    blogId: string;
+    blogId?: string;
 }
+
+export interface UpdatedBlogDataType extends Omit<CreateBlogType, 'id'> {};
+
+export interface UpdateBlogType  extends UpdatedBlogDataType, GetCurrentBlogType {}

@@ -1,14 +1,15 @@
 import {Request, Response, Router} from "express";
 
 import {blogsRepository} from "../repositories/blogs-repository";
-import {RequestWithBody, RequestWithParams} from "../types";
-import {CreateBlogType, GetCurrentBlogType} from "../repositories/types";
+import {RequestWithBody, RequestWithBodyAndParams, RequestWithParams} from "../types";
+import {CreateBlogType, GetCurrentBlogType, UpdatedBlogDataType} from "../repositories/types";
 import {superAdminGuardMiddleware} from "../middlewares/auth-middleware";
 import {
     descriptionBlogMaxLengthValidate,
     getBlogValidationErrorsMiddieWare,
     nameBlogMaxLengthValidate,
-    websiteUrlBlogMaxLengthValidate, websiteUrlBlogUrlValidate,
+    websiteUrlBlogMaxLengthValidate,
+    websiteUrlBlogUrlValidate,
 } from "../middlewares/validate-blogs-middleware";
 
 export const blogsRouter = Router();
@@ -41,5 +42,26 @@ blogsRouter.get("/:blogId",
         }
 
         res.status(200).send(currentBlog);
+    });
+
+blogsRouter.put("/:blogId",
+    superAdminGuardMiddleware,
+    descriptionBlogMaxLengthValidate,
+    nameBlogMaxLengthValidate,
+    websiteUrlBlogMaxLengthValidate,
+    websiteUrlBlogUrlValidate,
+    getBlogValidationErrorsMiddieWare,
+    (req:RequestWithBodyAndParams<GetCurrentBlogType,UpdatedBlogDataType>, res: Response) => {
+        const currentBlogId = req.params.blogId || '';
+
+        console.log(currentBlogId,'currentBlogId')
+
+        const currentBlog = blogsRepository.updateBlog({ blogId: currentBlogId , ...req.body});
+
+        if(!currentBlog){
+            return res.sendStatus(404)
+        }
+
+        res.sendStatus(204)
     });
 
