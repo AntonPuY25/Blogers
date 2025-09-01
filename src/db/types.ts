@@ -5,3 +5,12 @@ export interface BlogType {
     websiteUrl: string;
 
 }
+
+export interface PostType {
+    id: string;
+    title: string;
+    shortDescription: string;
+    content: string;
+    blogName: string;
+    blogId: string;
+}

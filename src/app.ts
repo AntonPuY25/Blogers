@@ -1,11 +1,13 @@
 import express, {Express} from "express";
 import {blogsRouter} from "./routers/blogs-router";
 import {testRouter} from "./routers/test-router";
+import {postRouter} from "./routers/post-router";
 
 export const setupApp = (app: Express) => {
     app.use(express.json()); // middleware для парсинга JSON в теле запроса
 
     app.use('/blogs', blogsRouter);
+    app.use('/posts', postRouter);
     app.use('/testing/all-data', testRouter);
 
     app.get("/", (req, res) => {
