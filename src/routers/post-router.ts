@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 import {postRepository} from "../repositories/post-repository";
-import {RequestWithBody} from "../types";
-import {CreatePostRequest} from "./types";
+import {RequestWithBody, RequestWithParams} from "../types";
+import {CreatePostRequest, GetCurrentPostId} from "./types";
 import {superAdminGuardMiddleware} from "../middlewares/auth-middleware";
 import {
     blogIdPostRequiredValidate,
@@ -42,3 +42,14 @@ postRouter.post("/",
     res.status(201).send(newPost);
 });
 
+postRouter.get("/:postId", (req:RequestWithParams<GetCurrentPostId>, res:Response) => {
+    const currentPostId = req.params.postId;
+
+    const currentPost = postRepository.getPostById(currentPostId);
+
+    if(!currentPost) {
+        return res.sendStatus(404)
+    }
+
+    res.status(200).send(currentPost)
+});

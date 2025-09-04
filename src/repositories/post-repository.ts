@@ -29,4 +29,14 @@ export const postRepository = {
         return newPost;
     },
 
+    getPostById: (postId: string) => {
+        const currentPost = PostState.find(({id})=>id === postId);
+
+        if(!currentPost){
+            return null;
+        }
+
+        return currentPost;
+    }
+
 }
