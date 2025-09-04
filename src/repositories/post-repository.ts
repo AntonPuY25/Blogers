@@ -63,10 +63,26 @@ export const postRepository = {
 
     const currentPost = PostState[currentPostIndex];
 
+    if (!currentPost) {
+      return null;
+    }
+
     const updatedPost = { ...currentPost, title, content, shortDescription };
 
     PostState.splice(currentPostIndex, 1, updatedPost);
 
     return updatedPost;
+  },
+
+  deletePost: (postId: string) => {
+    const currentPostIndex = PostState.findIndex(({ id }) => id === postId);
+
+    if (currentPostIndex !== -1) {
+      PostState.splice(currentPostIndex, 1);
+
+      return true;
+    }
+
+    return false;
   },
 };

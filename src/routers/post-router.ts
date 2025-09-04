@@ -110,3 +110,19 @@ postRouter.put(
     res.sendStatus(204);
   },
 );
+
+postRouter.delete(
+  "/:postId",
+  superAdminGuardMiddleware,
+  (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
+    const currentPostId = req.params.postId || "";
+
+    const isDeletedPost = postRepository.deletePost(currentPostId);
+
+    if (!isDeletedPost) {
+      return res.sendStatus(404);
+    }
+
+    res.sendStatus(204);
+  },
+);
