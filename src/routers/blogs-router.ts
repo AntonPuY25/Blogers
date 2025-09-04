@@ -1,79 +1,102 @@
-import {Request, Response, Router} from "express";
+import { Request, Response, Router } from "express";
 
-import {blogsRepository} from "../repositories/blogs-repository";
-import {RequestWithBody, RequestWithBodyAndParams, RequestWithParams} from "../types";
-import {CreateBlogType, GetCurrentBlogType, UpdatedBlogDataType} from "../repositories/types";
-import {superAdminGuardMiddleware} from "../middlewares/auth-middleware";
+import { blogsRepository } from "../repositories/blogs-repository";
 import {
-    descriptionBlogMaxLengthValidate,
-    getBlogValidationErrorsMiddieWare,
-    nameBlogMaxLengthValidate,
-    websiteUrlBlogMaxLengthValidate,
-    websiteUrlBlogUrlValidate,
+  RequestWithBody,
+  RequestWithBodyAndParams,
+  RequestWithParams,
+} from "../types";
+import {
+  CreateBlogType,
+  GetCurrentBlogType,
+  UpdatedBlogDataType,
+} from "../repositories/types";
+import { superAdminGuardMiddleware } from "../middlewares/auth-middleware";
+import {
+  descriptionBlogMaxLengthValidate,
+  getBlogValidationErrorsMiddieWare,
+  nameBlogMaxLengthValidate,
+  websiteUrlBlogMaxLengthValidate,
+  websiteUrlBlogUrlValidate,
 } from "../middlewares/validate-blogs-middleware";
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", (req:Request, res:Response) => {
-    res.status(200).send(blogsRepository.getAllBlogs());
+blogsRouter.get("/", (req: Request, res: Response) => {
+  res.status(200).send(blogsRepository.getAllBlogs());
 });
 
-blogsRouter.post("/",
-    superAdminGuardMiddleware,
-    descriptionBlogMaxLengthValidate,
-    nameBlogMaxLengthValidate,
-    websiteUrlBlogMaxLengthValidate,
-    websiteUrlBlogUrlValidate,
-    getBlogValidationErrorsMiddieWare,
-    (req:RequestWithBody<CreateBlogType>, res: Response) => {
+blogsRouter.post(
+  "/",
+  superAdminGuardMiddleware,
+  descriptionBlogMaxLengthValidate,
+  nameBlogMaxLengthValidate,
+  websiteUrlBlogMaxLengthValidate,
+  websiteUrlBlogUrlValidate,
+  getBlogValidationErrorsMiddieWare,
+  (req: RequestWithBody<CreateBlogType>, res: Response) => {
     const createBlog = blogsRepository.createBlog(req.body);
 
     res.status(201).send(createBlog);
-});
+  },
+);
 
-blogsRouter.get("/:blogId",
-    (req:RequestWithParams<GetCurrentBlogType>, res: Response) => {
-        const currentBlogId = req.params.blogId;
+blogsRouter.get(
+  "/:blogId",
+  (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+    const currentBlogId = req.params.blogId;
 
-        const currentBlog = blogsRepository.getCurrentBlog({ blogId: currentBlogId });
-
-        if(!currentBlog){
-           return res.sendStatus(404)
-        }
-
-        res.status(200).send(currentBlog);
+    const currentBlog = blogsRepository.getCurrentBlog({
+      blogId: currentBlogId,
     });
 
-blogsRouter.put("/:blogId",
-    superAdminGuardMiddleware,
-    descriptionBlogMaxLengthValidate,
-    nameBlogMaxLengthValidate,
-    websiteUrlBlogMaxLengthValidate,
-    websiteUrlBlogUrlValidate,
-    getBlogValidationErrorsMiddieWare,
-    (req:RequestWithBodyAndParams<GetCurrentBlogType,UpdatedBlogDataType>, res: Response) => {
-        const currentBlogId = req.params.blogId || '';
+    if (!currentBlog) {
+      return res.sendStatus(404);
+    }
 
-        const currentBlog = blogsRepository.updateBlog({ blogId: currentBlogId , ...req.body});
+    res.status(200).send(currentBlog);
+  },
+);
 
-        if(!currentBlog){
-            return res.sendStatus(404)
-        }
+blogsRouter.put(
+  "/:blogId",
+  superAdminGuardMiddleware,
+  descriptionBlogMaxLengthValidate,
+  nameBlogMaxLengthValidate,
+  websiteUrlBlogMaxLengthValidate,
+  websiteUrlBlogUrlValidate,
+  getBlogValidationErrorsMiddieWare,
+  (
+    req: RequestWithBodyAndParams<GetCurrentBlogType, UpdatedBlogDataType>,
+    res: Response,
+  ) => {
+    const currentBlogId = req.params.blogId || "";
 
-        res.sendStatus(204)
+    const currentBlog = blogsRepository.updateBlog({
+      blogId: currentBlogId,
+      ...req.body,
     });
 
-blogsRouter.delete("/:blogId",
-    superAdminGuardMiddleware,
-    (req:RequestWithParams<GetCurrentBlogType>, res: Response) => {
-        const currentBlogId = req.params.blogId || '';
+    if (!currentBlog) {
+      return res.sendStatus(404);
+    }
 
-        const currentBlog = blogsRepository.deleteBlog({ blogId: currentBlogId});
+    res.sendStatus(204);
+  },
+);
 
-        if(!currentBlog){
-            return res.sendStatus(404)
-        }
+blogsRouter.delete(
+  "/:blogId",
+  superAdminGuardMiddleware,
+  (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+    const currentBlogId = req.params.blogId || "";
 
-        res.sendStatus(204)
-    });
+    const currentBlog = blogsRepository.deleteBlog({ blogId: currentBlogId });
 
+    if (!currentBlog) {
+      return res.sendStatus(404);
+    }
+
+    res.sendStatus(204);
+  },
+);
