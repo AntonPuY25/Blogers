@@ -4,10 +4,10 @@ import {CreateBlogType, DeleteCurrentBlogType, GetCurrentBlogType, UpdateBlogTyp
 export const blogsRepository = {
     getAllBlogs:()=> DBBlogs,
 
-    createBlog: ({name,websiteUrl,description,id}:CreateBlogType)=>{
+    createBlog: ({name,websiteUrl,description}:CreateBlogType)=>{
 
         const newBlog = {
-            id,
+            id: new Date().toISOString(),
             name,
             description,
             websiteUrl,
