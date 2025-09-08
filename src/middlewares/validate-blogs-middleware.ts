@@ -38,16 +38,11 @@ export const descriptionBlogMaxLengthValidate = body("description")
 export const websiteUrlBlogMaxLengthValidate = body("websiteUrl")
   .trim()
   .isLength({ min: 1, max: 100 })
+  .matches(
+    /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/,
+  )
   .withMessage({
     message: "WebsiteUrl field is required and  must be maximum 100 symbols",
     field: "websiteUrl",
   });
 
-export const websiteUrlBlogUrlValidate = body("websiteUrl")
-  .matches(
-    /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/,
-  )
-  .withMessage({
-    message: "WebsiteUrl must be valid URL",
-    field: "websiteUrl",
-  });

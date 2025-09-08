@@ -17,7 +17,6 @@ import {
   getBlogValidationErrorsMiddieWare,
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
-  websiteUrlBlogUrlValidate,
 } from "../middlewares/validate-blogs-middleware";
 
 export const blogsRouter = Router();
@@ -32,7 +31,6 @@ blogsRouter.post(
   descriptionBlogMaxLengthValidate,
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
-  websiteUrlBlogUrlValidate,
   getBlogValidationErrorsMiddieWare,
   (req: RequestWithBody<CreateBlogType>, res: Response) => {
     const createBlog = blogsRepository.createBlog(req.body);
@@ -64,7 +62,6 @@ blogsRouter.put(
   descriptionBlogMaxLengthValidate,
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
-  websiteUrlBlogUrlValidate,
   getBlogValidationErrorsMiddieWare,
   (
     req: RequestWithBodyAndParams<GetCurrentBlogType, UpdatedBlogDataType>,
