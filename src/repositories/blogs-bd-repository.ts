@@ -1,16 +1,18 @@
 import { DBBlogs } from "../db/blog-state";
+import { ObjectId } from "mongodb";
 import {
   CreateBlogType,
   DeleteCurrentBlogType,
   GetCurrentBlogType,
   UpdateBlogType,
 } from "./types";
-import { mongodbClient } from "../db/db";
+import { blogsCollection } from "../db/db";
 
 export const blogsBdRepository = {
   getAllBlogs: async () => {
-    return  mongodbClient.db("blogs").collection("blogs").find({}).toArray();
+    return blogsCollection.find({}).toArray();
   },
+
   createBlog: async ({ name, websiteUrl, description }: CreateBlogType) => {
     const newBlog = {
       id: new Date().toISOString(),
@@ -19,19 +21,23 @@ export const blogsBdRepository = {
       websiteUrl,
     };
 
-    DBBlogs.push(newBlog);
+    try {
+      await blogsCollection.insertOne(newBlog);
 
-    return newBlog;
+      return newBlog;
+    } catch (error) {
+      console.error(error);
+    }
   },
 
   getCurrentBlog: async ({ blogId }: GetCurrentBlogType) => {
-    const currentBlog = DBBlogs.find(({ id }) => id === blogId);
+    const blog = await blogsCollection.findOne({ id: blogId });
 
-    if (!currentBlog) {
+    if (!blog) {
       return null;
     }
 
-    return currentBlog;
+    return blog;
   },
 
   updateBlog: async ({
@@ -40,39 +46,23 @@ export const blogsBdRepository = {
     description,
     blogId,
   }: UpdateBlogType) => {
-    const currentBlogIndex = DBBlogs.findIndex(({ id }) => id === blogId);
+    const blog = await blogsCollection.updateOne(
+      { id: blogId }, // Фильтр - по какому документу искать
+      {
+        $set: {
+          name,
+          description,
+          websiteUrl,
+        },
+      },
+    );
 
-    if (currentBlogIndex === -1) {
-      return null;
-    }
-
-    const currentBlog = DBBlogs[currentBlogIndex];
-
-    const newBlog = {
-      name,
-      description,
-      websiteUrl,
-    };
-
-    DBBlogs.splice(currentBlogIndex, 1, {
-      ...currentBlog,
-      name,
-      description,
-      websiteUrl,
-    });
-
-    return newBlog;
+    return blog.modifiedCount;
   },
 
   deleteBlog: async ({ blogId }: DeleteCurrentBlogType) => {
-    const currentBlogIndex = DBBlogs.findIndex(({ id }) => id === blogId);
+    const currentBlogIndex = await blogsCollection.deleteOne({ id: blogId });
 
-    if (currentBlogIndex === -1) {
-      return null;
-    }
-
-    DBBlogs.splice(currentBlogIndex, 1);
-
-    return true;
+    return currentBlogIndex.deletedCount;
   },
 };

@@ -10,6 +10,8 @@ export const getBlogValidationErrorsMiddieWare = (
 
   if (errors.isEmpty()) {
     next();
+
+    return
   }
 
   const result = errors.array().map(({ msg }) => {

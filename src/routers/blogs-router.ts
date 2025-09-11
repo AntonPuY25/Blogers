@@ -1,6 +1,4 @@
 import { Request, Response, Router } from "express";
-
-import { blogsRepository } from "../repositories/blogs-repository";
 import {
   RequestWithBody,
   RequestWithBodyAndParams,
@@ -25,8 +23,6 @@ export const blogsRouter = Router();
 blogsRouter.get("/", async (req: Request, res: Response) => {
   const allBlogs = await blogsBdRepository.getAllBlogs();
 
-  console.log(allBlogs, "allBlogs");
-
   res.status(200).send(allBlogs);
 });
 
@@ -37,8 +33,8 @@ blogsRouter.post(
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  (req: RequestWithBody<CreateBlogType>, res: Response) => {
-    const createBlog = blogsRepository.createBlog(req.body);
+  async (req: RequestWithBody<CreateBlogType>, res: Response) => {
+    const createBlog = await blogsBdRepository.createBlog(req.body);
 
     res.status(201).send(createBlog);
   },
@@ -46,10 +42,10 @@ blogsRouter.post(
 
 blogsRouter.get(
   "/:blogId",
-  (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+  async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId;
 
-    const currentBlog = blogsRepository.getCurrentBlog({
+    const currentBlog = await blogsBdRepository.getCurrentBlog({
       blogId: currentBlogId,
     });
 
@@ -68,13 +64,13 @@ blogsRouter.put(
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  (
+  async (
     req: RequestWithBodyAndParams<GetCurrentBlogType, UpdatedBlogDataType>,
     res: Response,
   ) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = blogsRepository.updateBlog({
+    const currentBlog = await blogsBdRepository.updateBlog({
       blogId: currentBlogId,
       ...req.body,
     });
@@ -90,10 +86,12 @@ blogsRouter.put(
 blogsRouter.delete(
   "/:blogId",
   superAdminGuardMiddleware,
-  (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+  async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = blogsRepository.deleteBlog({ blogId: currentBlogId });
+    const currentBlog = await blogsBdRepository.deleteBlog({
+      blogId: currentBlogId,
+    });
 
     if (!currentBlog) {
       return res.sendStatus(404);

@@ -2,7 +2,11 @@ import { MongoClient } from "mongodb";
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 
-export const mongodbClient = new MongoClient(mongoUri);
+const mongodbClient = new MongoClient(mongoUri);
+
+const dbBlogs = mongodbClient.db("blogs");
+
+export const blogsCollection = dbBlogs.collection("blogs");
 
 export async function runDb() {
   try {
