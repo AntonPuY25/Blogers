@@ -10,6 +10,8 @@ export const getPostsValidationErrorsMiddieWare = (
 
   if (errors.isEmpty()) {
     next();
+
+    return;
   }
 
   const result = errors.array().map(({ msg }) => {

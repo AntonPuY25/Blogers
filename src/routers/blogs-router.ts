@@ -16,12 +16,12 @@ import {
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
 } from "../middlewares/validate-blogs-middleware";
-import { blogsBdRepository } from "../repositories/blogs-bd-repository";
+import { blogsRepository } from "../repositories/blogs-repository";
 
 export const blogsRouter = Router();
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
-  const allBlogs = await blogsBdRepository.getAllBlogs();
+  const allBlogs = await blogsRepository.getAllBlogs();
 
   res.status(200).send(allBlogs);
 });
@@ -34,7 +34,7 @@ blogsRouter.post(
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
   async (req: RequestWithBody<CreateBlogType>, res: Response) => {
-    const createBlog = await blogsBdRepository.createBlog(req.body);
+    const createBlog = await blogsRepository.createBlog(req.body);
 
     res.status(201).send(createBlog);
   },
@@ -45,7 +45,7 @@ blogsRouter.get(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId;
 
-    const currentBlog = await blogsBdRepository.getCurrentBlog({
+    const currentBlog = await blogsRepository.getCurrentBlog({
       blogId: currentBlogId,
     });
 
@@ -70,7 +70,7 @@ blogsRouter.put(
   ) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsBdRepository.updateBlog({
+    const currentBlog = await blogsRepository.updateBlog({
       blogId: currentBlogId,
       ...req.body,
     });
@@ -89,7 +89,7 @@ blogsRouter.delete(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsBdRepository.deleteBlog({
+    const currentBlog = await blogsRepository.deleteBlog({
       blogId: currentBlogId,
     });
 

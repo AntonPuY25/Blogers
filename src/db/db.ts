@@ -7,6 +7,7 @@ const mongodbClient = new MongoClient(mongoUri);
 const dbBlogs = mongodbClient.db("blogs");
 
 export const blogsCollection = dbBlogs.collection("blogs");
+export const postsCollection = dbBlogs.collection("posts");
 
 export async function runDb() {
   try {

@@ -3,12 +3,13 @@ import { CreatePostRequest } from "../routers/types";
 import { DBBlogs } from "../db/blog-state";
 import { PostType } from "../db/types";
 import { UpdatePostRepository } from "./types";
+import { blogsCollection, postsCollection } from "../db/db";
 
 export const postRepository = {
-  getAllPosts: () => PostState,
+  getAllPosts: async () => postsCollection.find({}).toArray(),
 
-  foundCurrentBlogForPost: (blogId: string) => {
-    const currentBlog = DBBlogs.find(({ id }) => blogId === id);
+  foundCurrentBlogForPost: async (blogId: string) => {
+    const currentBlog = await blogsCollection.findOne({ id: blogId });
 
     if (!currentBlog) {
       return null;
@@ -17,13 +18,13 @@ export const postRepository = {
     }
   },
 
-  createNewPost: ({
+  createNewPost: async ({
     content,
     shortDescription,
     title,
     blogId,
   }: CreatePostRequest) => {
-    const currentBlog = postRepository.foundCurrentBlogForPost(blogId);
+    const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);
 
     if (!currentBlog) {
       return null;
@@ -38,13 +39,13 @@ export const postRepository = {
       blogName: currentBlog.name,
     };
 
-    PostState.push(newPost);
+    await postsCollection.insertOne(newPost);
 
     return newPost;
   },
 
-  getPostById: (postId: string) => {
-    const currentPost = PostState.find(({ id }) => id === postId);
+  getPostById: async (postId: string) => {
+    const currentPost = await postsCollection.findOne({ id: postId });
 
     if (!currentPost) {
       return null;
@@ -53,36 +54,29 @@ export const postRepository = {
     return currentPost;
   },
 
-  updatedPost: ({
+  updatedPost: async ({
     content,
     shortDescription,
     title,
     postId,
   }: UpdatePostRepository) => {
-    const currentPostIndex = PostState.findIndex(({ id }) => id === postId);
+    const updatedPost = await postsCollection.updateOne(
+      { id: postId }, // Фильтр - по какому документу искать
+      {
+        $set: {
+          title,
+          shortDescription,
+          content,
+        },
+      },
+    );
 
-    const currentPost = PostState[currentPostIndex];
-
-    if (!currentPost) {
-      return null;
-    }
-
-    const updatedPost = { ...currentPost, title, content, shortDescription };
-
-    PostState.splice(currentPostIndex, 1, updatedPost);
-
-    return updatedPost;
+    return updatedPost.modifiedCount;
   },
 
-  deletePost: (postId: string) => {
-    const currentPostIndex = PostState.findIndex(({ id }) => id === postId);
+  deletePost: async (postId: string) => {
+    const deletedPost = await postsCollection.deleteOne({ id: postId });
 
-    if (currentPostIndex !== -1) {
-      PostState.splice(currentPostIndex, 1);
-
-      return true;
-    }
-
-    return false;
+    return deletedPost.deletedCount;
   },
 };

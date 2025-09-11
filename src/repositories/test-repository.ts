@@ -1,9 +1,10 @@
-import {DBBlogs} from "../db/blog-state";
 import {PostState} from "../db/post-state";
+import { blogsCollection } from "../db/db";
 
 export const testRepository = {
-    clearAll: () => {
-        DBBlogs.length = 0;
+    clearAll: async () => {
+      await blogsCollection.deleteMany({})
+
         PostState.length = 0;
     }
 }
