@@ -5,6 +5,8 @@ export interface BlogType {
   websiteUrl: string;
 }
 
+export interface CreateBlogType extends Omit<BlogType, "id"> {}
+
 export interface PostType {
   id: string;
   title: string;

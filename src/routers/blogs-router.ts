@@ -18,11 +18,16 @@ import {
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
 } from "../middlewares/validate-blogs-middleware";
+import { blogsBdRepository } from "../repositories/blogs-bd-repository";
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", (req: Request, res: Response) => {
-  res.status(200).send(blogsRepository.getAllBlogs());
+blogsRouter.get("/", async (req: Request, res: Response) => {
+  const allBlogs = await blogsBdRepository.getAllBlogs();
+
+  console.log(allBlogs, "allBlogs");
+
+  res.status(200).send(allBlogs);
 });
 
 blogsRouter.post(

@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import {setupApp} from "../src/app";
-import {BlogType} from "../src/db/types";
+import { BlogType, CreateBlogType } from "../src/db/types";
 import {ADMIN_USERNAME, ADMIN_PASSWORD} from "../src/middlewares/auth-middleware";
 import {UpdateBlogType, UpdatedBlogDataType} from "../src/repositories/types";
 
@@ -18,14 +18,13 @@ describe("Blogs tests", () => {
     });
 
     it(`should create new blog and get it'`, async () => {
-      const testNewBlogData: BlogType = {
-        id: new Date().getMilliseconds().toString(),
+      const testNewBlogData: CreateBlogType = {
         name: "Blog test",
         description: "Description test",
         websiteUrl: "https://samurai.it-test-incubator.io",
       };
 
-      await request(app)
+      const createdBlog = await request(app)
         .post("/blogs")
         .set("Authorization", `Basic ${basicAuthToken}`)
         .send(testNewBlogData)
@@ -39,7 +38,7 @@ describe("Blogs tests", () => {
       expect(getBlogs.body[0]?.websiteUrl).toBe(testNewBlogData.websiteUrl);
 
       const getCurrentBlog = await request(app)
-        .get(`/blogs/${testNewBlogData.id}`)
+        .get(`/blogs/${createdBlog.body.id}`)
         .expect(200);
 
       expect(getCurrentBlog.body?.name).toBe(testNewBlogData.name);
@@ -51,8 +50,7 @@ describe("Blogs tests", () => {
 
     it(`should update new blog and get it'`, async () => {
 
-        const testNewBlogData:BlogType = {
-            id: new Date().getMilliseconds().toString(),
+        const testNewBlogData:CreateBlogType = {
             name: "Blog test",
             description: 'Description test',
             websiteUrl: "https://samurai.it-test-incubator.io"
@@ -65,14 +63,14 @@ describe("Blogs tests", () => {
         };
 
 
-        await request(app)
+       const createdBlog = await request(app)
             .post("/blogs")
             .set('Authorization', `Basic ${basicAuthToken}`)
             .send(testNewBlogData)
             .expect(201)
 
         const getCurrentBlog = await request(app)
-            .get(`/blogs/${testNewBlogData.id}`)
+            .get(`/blogs/${createdBlog.body.id}`)
             .expect(200);
 
         expect(getCurrentBlog.body?.name).toBe(testNewBlogData.name);
@@ -81,13 +79,13 @@ describe("Blogs tests", () => {
 
 
        await request(app)
-            .put(`/blogs/${testNewBlogData.id}`)
+            .put(`/blogs/${createdBlog.body.id}`)
             .set('Authorization', `Basic ${basicAuthToken}`)
             .send(testNewBlogDataForUpdate)
             .expect(204);
 
         const getCurrentAfterUpdateBlog = await request(app)
-            .get(`/blogs/${testNewBlogData.id}`)
+            .get(`/blogs/${createdBlog.body.id}`)
             .expect(200);
 
         expect(getCurrentAfterUpdateBlog.body?.name).toBe(testNewBlogDataForUpdate.name);
@@ -95,7 +93,7 @@ describe("Blogs tests", () => {
         expect(getCurrentAfterUpdateBlog.body?.websiteUrl).toBe(testNewBlogDataForUpdate.websiteUrl);
 
             await request(app)
-            .delete(`/blogs/${testNewBlogData.id}`)
+            .delete(`/blogs/${createdBlog.body.id}`)
             .set('Authorization', `Basic ${basicAuthToken}`)
             .expect(204);
 

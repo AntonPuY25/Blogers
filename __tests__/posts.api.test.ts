@@ -5,7 +5,7 @@ import {
   ADMIN_PASSWORD,
   ADMIN_USERNAME,
 } from "../src/middlewares/auth-middleware";
-import { BlogType, UpdatePostType } from "../src/db/types";
+import { BlogType, CreateBlogType, UpdatePostType } from "../src/db/types";
 
 describe("Posts tests", () => {
   const app = express();
@@ -22,14 +22,13 @@ describe("Posts tests", () => {
   });
 
   it(`should create new blog and post for it and get post by id'`, async () => {
-    const testNewBlogData: BlogType = {
-      id: new Date().getMilliseconds().toString(),
+    const testNewBlogData: CreateBlogType = {
       name: "Blog test",
       description: "Description test",
       websiteUrl: "https://samurai.it-test-incubator.io",
     };
 
-    await request(app)
+    const createdBlog = await request(app)
       .post("/blogs")
       .set("Authorization", `Basic ${basicAuthToken}`)
       .send(testNewBlogData)
@@ -43,7 +42,7 @@ describe("Posts tests", () => {
     expect(getBlogs.body[0]?.websiteUrl).toBe(testNewBlogData.websiteUrl);
 
     const getCurrentBlog = await request(app)
-      .get(`/blogs/${testNewBlogData.id}`)
+      .get(`/blogs/${createdBlog.body.id}`)
       .expect(200);
 
     expect(getCurrentBlog.body?.name).toBe(testNewBlogData.name);
@@ -70,7 +69,7 @@ describe("Posts tests", () => {
     );
     expect(createdPost.body?.content).toBe(testNewPostData.content);
     expect(testNewBlogData.name).toBe(testNewPostData.blogName);
-    expect(testNewBlogData.id).toBe(testNewPostData.blogId);
+    expect(createdBlog.body.id).toBe(testNewPostData.blogId);
 
     const testNewUpdateData: UpdatePostType = {
       title: "Updated test",
