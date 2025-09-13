@@ -1,6 +1,14 @@
 import { MongoClient } from "mongodb";
+import dotenv from 'dotenv'
 
-const mongoUri = "mongodb+srv://Admin:Admin@bloggers.qkgu6ey.mongodb.net/?retryWrites=true&w=majority&appName=Bloggers";
+dotenv.config()
+
+const mongoUri =  process.env.LOCAL_MONGO_URI_FOR_BLOGS_PROJECT;
+
+
+if(!mongoUri){
+  throw new Error("MongoUri not found.");
+}
 
 const mongodbClient = new MongoClient(mongoUri);
 
