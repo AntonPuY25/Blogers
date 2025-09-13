@@ -1,19 +1,19 @@
 import { MongoClient } from "mongodb";
 
-const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+const mongoUri = "mongodb+srv://Admin:Admin@bloggers.qkgu6ey.mongodb.net/?retryWrites=true&w=majority&appName=Bloggers";
 
 const mongodbClient = new MongoClient(mongoUri);
 
-const dbBlogs = mongodbClient.db("blogs");
+const dbBlogs = mongodbClient.db("Bloggers");
 
-export const blogsCollection = dbBlogs.collection("blogs");
-export const postsCollection = dbBlogs.collection("posts");
+export const blogsCollection = dbBlogs.collection("Blogs");
+export const postsCollection = dbBlogs.collection("Posts");
 
 export async function runDb() {
   try {
     await mongodbClient.connect();
 
-    await mongodbClient.db('Blogers').command({ping: 1})
+    await mongodbClient.db('Bloggers').command({ping: 1})
 
     console.log("Database Connected");
   } catch {
