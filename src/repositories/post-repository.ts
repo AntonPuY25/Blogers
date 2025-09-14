@@ -1,15 +1,17 @@
-import { PostState } from "../db/post-state";
 import { CreatePostRequest } from "../routers/types";
-import { DBBlogs } from "../db/blog-state";
 import { PostType } from "../db/types";
 import { UpdatePostRepository } from "./types";
 import { blogsCollection, postsCollection } from "../db/db";
 
 export const postRepository = {
-  getAllPosts: async () => postsCollection.find({}).toArray(),
+  getAllPosts: async () =>
+    postsCollection.find({}).project({ _id: 0 }).toArray(),
 
   foundCurrentBlogForPost: async (blogId: string) => {
-    const currentBlog = await blogsCollection.findOne({ id: blogId });
+    const currentBlog = await blogsCollection.findOne(
+      { id: blogId },
+      { projection: { _id: 0 } },
+    );
 
     if (!currentBlog) {
       return null;
@@ -41,7 +43,9 @@ export const postRepository = {
 
     await postsCollection.insertOne(newPost);
 
-    return newPost;
+    const { _id, ...postWithoutMongoId } = newPost as any;
+
+    return postWithoutMongoId;
   },
 
   getPostById: async (postId: string) => {

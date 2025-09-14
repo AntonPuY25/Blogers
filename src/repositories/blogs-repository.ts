@@ -1,5 +1,3 @@
-import { DBBlogs } from "../db/blog-state";
-import { ObjectId } from "mongodb";
 import {
   CreateBlogType,
   DeleteCurrentBlogType,
@@ -10,7 +8,7 @@ import { blogsCollection } from "../db/db";
 
 export const blogsRepository = {
   getAllBlogs: async () => {
-    return blogsCollection.find({}).toArray();
+    return blogsCollection.find({}).project({ _id: 0 }).toArray();
   },
 
   createBlog: async ({ name, websiteUrl, description }: CreateBlogType) => {
@@ -24,14 +22,19 @@ export const blogsRepository = {
     try {
       await blogsCollection.insertOne(newBlog);
 
-      return newBlog;
+      const { _id, ...blogWithoutMongoId } = newBlog as any;
+
+      return blogWithoutMongoId;
     } catch (error) {
       console.error(error);
     }
   },
 
   getCurrentBlog: async ({ blogId }: GetCurrentBlogType) => {
-    const blog = await blogsCollection.findOne({ id: blogId });
+    const blog = await blogsCollection.findOne(
+      { id: blogId },
+      { projection: { _id: 0 } },
+    );
 
     if (!blog) {
       return null;

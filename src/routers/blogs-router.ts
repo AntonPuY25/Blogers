@@ -36,6 +36,8 @@ blogsRouter.post(
   async (req: RequestWithBody<CreateBlogType>, res: Response) => {
     const createBlog = await blogsRepository.createBlog(req.body);
 
+    console.log(createBlog,'createBlog');
+
     res.status(201).send(createBlog);
   },
 );
