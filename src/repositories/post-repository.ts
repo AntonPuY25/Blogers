@@ -49,7 +49,10 @@ export const postRepository = {
   },
 
   getPostById: async (postId: string) => {
-    const currentPost = await postsCollection.findOne({ id: postId });
+    const currentPost = await postsCollection.findOne(
+      { id: postId },
+      { projection: { _id: 0 } },
+    );
 
     if (!currentPost) {
       return null;
