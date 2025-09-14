@@ -3,6 +3,8 @@ export interface BlogType {
   name: string;
   description: string;
   websiteUrl: string;
+  isMembership: boolean;
+  createdAt: string;
 }
 
 export interface CreateBlogType extends Omit<BlogType, "id"> {}
@@ -14,6 +16,7 @@ export interface PostType {
   content: string;
   blogName: string;
   blogId: string;
+  createdAt: string;
 }
 
 export interface UpdatePostType extends Omit<PostType, "id" | "blogName"> {}

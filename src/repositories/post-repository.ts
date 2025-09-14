@@ -39,6 +39,7 @@ export const postRepository = {
       blogId,
       id: new Date().toISOString(),
       blogName: currentBlog.name,
+      createdAt: new Date().toString(),
     };
 
     await postsCollection.insertOne(newPost);

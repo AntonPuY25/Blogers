@@ -5,6 +5,7 @@ import {
   UpdateBlogType,
 } from "./types";
 import { blogsCollection } from "../db/db";
+import { BlogType } from "../db/types";
 
 export const blogsRepository = {
   getAllBlogs: async () => {
@@ -12,11 +13,13 @@ export const blogsRepository = {
   },
 
   createBlog: async ({ name, websiteUrl, description }: CreateBlogType) => {
-    const newBlog = {
+    const newBlog:BlogType = {
       id: new Date().toISOString(),
       name,
       description,
       websiteUrl,
+      isMembership: false,
+      createdAt: new Date().toString(),
     };
 
     try {
