@@ -19,7 +19,7 @@ export const blogsRepository = {
       description,
       websiteUrl,
       isMembership: false,
-      createdAt: new Date().toString(),
+      createdAt: new Date().toISOString(),
     };
 
     try {

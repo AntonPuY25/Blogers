@@ -27,7 +27,7 @@ describe("Posts tests", () => {
       description: "Description test",
       websiteUrl: "https://samurai.it-test-incubator.io",
       isMembership: false,
-      createdAt: new Date().toString(),
+      createdAt: new Date().toISOString(),
     };
 
     const createdBlog = await request(app)
@@ -78,7 +78,7 @@ describe("Posts tests", () => {
       shortDescription: "Updated Description for test post",
       content: "Updated content for test post",
       blogId: getCurrentBlog.body?.id,
-      createdAt: new Date().toString(),
+      createdAt: new Date().toISOString(),
     };
 
     await request(app)
