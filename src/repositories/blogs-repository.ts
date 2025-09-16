@@ -1,5 +1,5 @@
 import {
-  CreateBlogType,
+  CreateBlogTypeForRepositories,
   DeleteCurrentBlogType,
   GetCurrentBlogType,
   UpdateBlogType,
@@ -12,22 +12,13 @@ export const blogsRepository = {
     return blogsCollection.find({}).project({ _id: 0 }).toArray();
   },
 
-  createBlog: async ({ name, websiteUrl, description }: CreateBlogType) => {
-    const newBlog:BlogType = {
-      id: new Date().toISOString(),
-      name,
-      description,
-      websiteUrl,
-      isMembership: false,
-      createdAt: new Date().toISOString(),
-    };
-
+  createBlog: async (newBlog: BlogType) => {
     try {
       await blogsCollection.insertOne(newBlog);
 
-      const { _id, ...blogWithoutMongoId } = newBlog as any;
 
-      return blogWithoutMongoId;
+
+      return newBlog;
     } catch (error) {
       console.error(error);
     }

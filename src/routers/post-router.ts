@@ -14,11 +14,12 @@ import {
   shortDescriptionPostMaxLengthValidate,
   titlePostMaxLengthValidate,
 } from "../middlewares/validate-posts-middleware";
+import { postService } from "../products/post-service";
 
 export const postRouter = Router();
 
 postRouter.get("/", async (req: Request, res: Response) => {
-  const allPosts = await postRepository.getAllPosts();
+  const allPosts = await postService.getAllPosts();
   res.status(200).send(allPosts);
 });
 
@@ -31,7 +32,7 @@ postRouter.post(
   blogIdPostRequiredValidate,
    getPostsValidationErrorsMiddieWare,
   async (req: RequestWithBody<CreatePostRequest>, res: Response) => {
-    const newPost =await postRepository.createNewPost({ ...req.body });
+    const newPost =await postService.createNewPost({ ...req.body });
 
     if (!newPost) {
       return res.status(400).send({
@@ -53,7 +54,7 @@ postRouter.get(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const currentPost =await postRepository.getPostById(currentPostId);
+    const currentPost =await postService.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);
@@ -78,7 +79,7 @@ postRouter.put(
     const currentPostId = req.params.postId || "";
     const { content, shortDescription, title, blogId } = req.body;
 
-    const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);
+    const currentBlog = await postService.foundCurrentBlogForPost(blogId);
 
     if (!currentBlog) {
       return res.status(400).send({
@@ -91,13 +92,13 @@ postRouter.put(
       });
     }
 
-    const currentPost =await postRepository.getPostById(currentPostId);
+    const currentPost =await postService.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);
     }
 
-    const updatedPost =await postRepository.updatedPost({
+    const updatedPost =await postService.updatedPost({
       postId: currentPost.id,
       title,
       shortDescription,
@@ -118,7 +119,7 @@ postRouter.delete(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const isDeletedPost = await postRepository.deletePost(currentPostId);
+    const isDeletedPost = await postService.deletePost(currentPostId);
 
     if (!isDeletedPost) {
       return res.sendStatus(404);

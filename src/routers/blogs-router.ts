@@ -5,7 +5,7 @@ import {
   RequestWithParams,
 } from "../types";
 import {
-  CreateBlogType,
+  CreateBlogTypeForRepositories,
   GetCurrentBlogType,
   UpdatedBlogDataType,
 } from "../repositories/types";
@@ -17,11 +17,12 @@ import {
   websiteUrlBlogMaxLengthValidate,
 } from "../middlewares/validate-blogs-middleware";
 import { blogsRepository } from "../repositories/blogs-repository";
+import { blogsService } from "../products/blogs-service";
 
 export const blogsRouter = Router();
 
 blogsRouter.get("/", async (req: Request, res: Response) => {
-  const allBlogs = await blogsRepository.getAllBlogs();
+  const allBlogs = await blogsService.getAllBlogs();
 
   res.status(200).send(allBlogs);
 });
@@ -33,8 +34,8 @@ blogsRouter.post(
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  async (req: RequestWithBody<CreateBlogType>, res: Response) => {
-    const createBlog = await blogsRepository.createBlog(req.body);
+  async (req: RequestWithBody<CreateBlogTypeForRepositories>, res: Response) => {
+    const createBlog = await blogsService.createBlog(req.body);
 
     res.status(201).send(createBlog);
   },
@@ -45,7 +46,7 @@ blogsRouter.get(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId;
 
-    const currentBlog = await blogsRepository.getCurrentBlog({
+    const currentBlog = await blogsService.getCurrentBlog({
       blogId: currentBlogId,
     });
 
@@ -70,7 +71,7 @@ blogsRouter.put(
   ) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsRepository.updateBlog({
+    const currentBlog = await blogsService.updateBlog({
       blogId: currentBlogId,
       ...req.body,
     });
@@ -89,7 +90,7 @@ blogsRouter.delete(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsRepository.deleteBlog({
+    const currentBlog = await blogsService.deleteBlog({
       blogId: currentBlogId,
     });
 

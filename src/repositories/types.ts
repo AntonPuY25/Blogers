@@ -1,6 +1,6 @@
 import {UpdatePostData} from "../routers/types";
 
-export interface CreateBlogType {
+export interface CreateBlogTypeForRepositories {
     id: string;
     name: string;
     description: string;
@@ -15,7 +15,7 @@ export interface DeleteCurrentBlogType {
     blogId: string;
 }
 
-export interface UpdatedBlogDataType extends Omit<CreateBlogType, 'id'> {};
+export interface UpdatedBlogDataType extends Omit<CreateBlogTypeForRepositories, 'id'> {};
 
 export interface UpdateBlogType  extends UpdatedBlogDataType, GetCurrentBlogType {}
 

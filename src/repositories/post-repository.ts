@@ -20,33 +20,14 @@ export const postRepository = {
     }
   },
 
-  createNewPost: async ({
-    content,
-    shortDescription,
-    title,
-    blogId,
-  }: CreatePostRequest) => {
-    const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);
+  createNewPost: async (newPost: PostType) => {
+    try {
+      await postsCollection.insertOne(newPost);
 
-    if (!currentBlog) {
-      return null;
+      return newPost;
+    } catch (error) {
+      console.error(error);
     }
-
-    const newPost: PostType = {
-      content,
-      shortDescription,
-      title,
-      blogId,
-      id: new Date().toISOString(),
-      blogName: currentBlog.name,
-      createdAt: new Date().toISOString(),
-    };
-
-    await postsCollection.insertOne(newPost);
-
-    const { _id, ...postWithoutMongoId } = newPost as any;
-
-    return postWithoutMongoId;
   },
 
   getPostById: async (postId: string) => {

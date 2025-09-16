@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const mongoUri =  process.env.MONGO_URI_FOR_BLOGS_PROJECT;
+const mongoUri =  process.env.LOCAL_MONGO_URI_FOR_BLOGS_PROJECT;
 
 
 if(!mongoUri){
