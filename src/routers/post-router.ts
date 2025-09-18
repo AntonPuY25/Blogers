@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { postRepository } from "../repositories/post-repository";
 import {
   RequestWithBody,
   RequestWithBodyAndParams,
