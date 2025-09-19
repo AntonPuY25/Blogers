@@ -1,4 +1,4 @@
-import { CreatePostRequest } from "../../routers/types";
+import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { blogsCollection, postsCollection } from "../../db/db";

@@ -57,3 +57,12 @@ export const websiteUrlBlogMaxLengthValidate = body("websiteUrl")
     message: "WebsiteUrl field is required and must be maximum 100 symbols",
     field: "websiteUrl",
   });
+
+export const querySearchNameTermValidate = body("searchNameTerm")
+  .optional()
+  .trim()
+  .isLength({ min: 1, max: 500 })
+  .withMessage({
+    message: "SearchNameTerm field is  must be maximum 500 symbols",
+    field: "SearchNameTerm",
+  });

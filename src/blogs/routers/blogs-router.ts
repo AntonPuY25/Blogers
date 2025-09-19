@@ -1,31 +1,46 @@
-import { Request, Response, Router } from "express";
+import { Response, Router } from "express";
 import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
-} from "../core/types/basic-url-types";
+  RequestWithQuery,
+} from "../../core/types/basic-url-types";
 import {
   CreateBlogTypeForRepositories,
   GetCurrentBlogType,
   UpdatedBlogDataType,
-} from "../core/types/repositories-types";
-import { superAdminGuardMiddleware } from "../core/middlewares/auth-middleware";
+} from "../../core/types/repositories-types";
+import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import {
   descriptionBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  nameBlogMaxLengthValidate,
-  websiteUrlBlogMaxLengthValidate,
-} from "../core/middlewares/validate-blogs-middleware";
-import { blogsRepository } from "../blogs/repositories/blogs-repository";
-import { blogsService } from "../blogs/application/blogs-service";
+  nameBlogMaxLengthValidate, querySearchNameTermValidate,
+  websiteUrlBlogMaxLengthValidate
+} from "../../core/middlewares/validate-blogs-middleware";
+import { blogsService } from "../application/blogs-service";
+import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
+import { BlogSortFields } from "./blog-sort-fields";
+import { GetAppBlogsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 
 export const blogsRouter = Router();
 
-blogsRouter.get("/", async (req: Request, res: Response) => {
-  const allBlogs = await blogsService.getAllBlogs();
+blogsRouter.get(
+  "/",
+  paginationAndSortingValidation(BlogSortFields),
+  querySearchNameTermValidate,
+  getBlogValidationErrorsMiddieWare,
+  async (
+    req: RequestWithQuery<GetAppBlogsPaginationWithSortWithSearchQuery>,
+    res: Response,
+  ) => {
+    const queryParamsForGetBlogs =
+      req.query as GetAppBlogsPaginationWithSortWithSearchQuery;
 
-  res.status(200).send(allBlogs);
-});
+    const allBlogs = await blogsService.getAllBlogs(queryParamsForGetBlogs);
+
+    res.status(200).send(allBlogs);
+  },
+);
 
 blogsRouter.post(
   "/",
@@ -34,7 +49,10 @@ blogsRouter.post(
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  async (req: RequestWithBody<CreateBlogTypeForRepositories>, res: Response) => {
+  async (
+    req: RequestWithBody<CreateBlogTypeForRepositories>,
+    res: Response,
+  ) => {
     const createBlog = await blogsService.createBlog(req.body);
 
     res.status(201).send(createBlog);
@@ -70,6 +88,8 @@ blogsRouter.put(
     res: Response,
   ) => {
     const currentBlogId = req.params.blogId || "";
+
+    const currentQueryParamsFormGetAllBlogs = req.query;
 
     const currentBlog = await blogsService.updateBlog({
       blogId: currentBlogId,

@@ -5,11 +5,14 @@ import {
   GetCurrentBlogType,
   UpdateBlogType,
 } from "../../core/types/repositories-types";
-import { CreateBlogTypeForService } from "./dtos/blogs-types";
+import { CreateBlogTypeForService, GetAllBlogsTypeForService } from "./types";
 
 export const blogsService = {
-  getAllBlogs: async () => {
-    return await blogsRepository.getAllBlogs();
+  getAllBlogs: async ({...params}:GetAllBlogsTypeForService) => {
+
+    console.log(params,'params');
+
+    return await blogsRepository.getAllBlogs(params);
   },
 
   createBlog: async ({

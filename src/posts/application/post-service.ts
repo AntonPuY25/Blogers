@@ -1,5 +1,5 @@
 import { postRepository } from "../repositories/post-repository";
-import { CreatePostRequest } from "../../routers/types";
+import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 

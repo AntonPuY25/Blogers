@@ -6,17 +6,28 @@ import {
 } from "../../core/types/repositories-types";
 import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
+import { GetAllBlogsTypeForRepositories } from "./types";
 
 export const blogsRepository = {
-  getAllBlogs: async () => {
-    return blogsCollection.find({}).project({ _id: 0 }).toArray();
+  getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
+    const searchQuery = params?.searchNameTerm
+      ? { name: { $regex: params.searchNameTerm, $options: "i" } }
+      : {};
+
+    const sortParams = {
+      [params?.sortBy]: params.sortDirection,
+    };
+
+    return blogsCollection
+      .find(searchQuery)
+      .sort(sortParams)
+      .project({ _id: 0 })
+      .toArray();
   },
 
   createBlog: async (newBlog: BlogType) => {
     try {
       await blogsCollection.insertOne(newBlog);
-
-
 
       return newBlog;
     } catch (error) {

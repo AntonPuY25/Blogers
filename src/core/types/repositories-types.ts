@@ -1,4 +1,4 @@
-import {UpdatePostData} from "../../routers/types";
+import {UpdatePostData} from "./routers-types";
 
 export interface CreateBlogTypeForRepositories {
     id: string;
