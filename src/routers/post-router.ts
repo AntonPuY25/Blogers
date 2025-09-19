@@ -3,17 +3,17 @@ import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
-} from "../types";
+} from "../core/types/basic-url-types";
 import { CreatePostRequest, GetCurrentPostId, UpdatePostData } from "./types";
-import { superAdminGuardMiddleware } from "../middlewares/auth-middleware";
+import { superAdminGuardMiddleware } from "../core/middlewares/auth-middleware";
 import {
   blogIdPostRequiredValidate,
   contentPostMaxLengthValidate,
   getPostsValidationErrorsMiddieWare,
   shortDescriptionPostMaxLengthValidate,
   titlePostMaxLengthValidate,
-} from "../middlewares/validate-posts-middleware";
-import { postService } from "../products/post-service";
+} from "../core/middlewares/validate-posts-middleware";
+import { postService } from "../posts/application/post-service";
 
 export const postRouter = Router();
 

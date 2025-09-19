@@ -1,7 +1,7 @@
-import { CreatePostRequest } from "../routers/types";
-import { PostType } from "../db/types";
-import { UpdatePostRepository } from "./types";
-import { blogsCollection, postsCollection } from "../db/db";
+import { CreatePostRequest } from "../../routers/types";
+import { PostType } from "../../core/types/db-types";
+import { UpdatePostRepository } from "../../core/types/repositories-types";
+import { blogsCollection, postsCollection } from "../../db/db";
 
 export const postRepository = {
   getAllPosts: async () =>

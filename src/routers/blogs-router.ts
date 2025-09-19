@@ -3,21 +3,21 @@ import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
-} from "../types";
+} from "../core/types/basic-url-types";
 import {
   CreateBlogTypeForRepositories,
   GetCurrentBlogType,
   UpdatedBlogDataType,
-} from "../repositories/types";
-import { superAdminGuardMiddleware } from "../middlewares/auth-middleware";
+} from "../core/types/repositories-types";
+import { superAdminGuardMiddleware } from "../core/middlewares/auth-middleware";
 import {
   descriptionBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
   nameBlogMaxLengthValidate,
   websiteUrlBlogMaxLengthValidate,
-} from "../middlewares/validate-blogs-middleware";
-import { blogsRepository } from "../repositories/blogs-repository";
-import { blogsService } from "../products/blogs-service";
+} from "../core/middlewares/validate-blogs-middleware";
+import { blogsRepository } from "../blogs/repositories/blogs-repository";
+import { blogsService } from "../blogs/application/blogs-service";
 
 export const blogsRouter = Router();
 

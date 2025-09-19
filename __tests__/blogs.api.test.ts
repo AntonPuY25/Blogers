@@ -1,9 +1,9 @@
 import request from "supertest";
 import express from "express";
 import {setupApp} from "../src/app";
-import { BlogType, CreateBlogType } from "../src/db/types";
-import {ADMIN_USERNAME, ADMIN_PASSWORD} from "../src/middlewares/auth-middleware";
-import {UpdateBlogType, UpdatedBlogDataType} from "../src/repositories/types";
+import { BlogType, CreateBlogType } from "../src/core/types/db-types";
+import {ADMIN_USERNAME, ADMIN_PASSWORD} from "../src/core/middlewares/auth-middleware";
+import {UpdateBlogType, UpdatedBlogDataType} from "../src/core/types/repositories-types";
 
 describe("Blogs tests", () => {
     const app = express();

@@ -1,12 +1,12 @@
 import { MongoClient } from "mongodb";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
+import { SETTINGS } from "../core/settings/settings";
 
-dotenv.config()
+dotenv.config();
 
-const mongoUri =  process.env.LOCAL_MONGO_URI_FOR_BLOGS_PROJECT;
+const mongoUri = SETTINGS.MONGO_URL;
 
-
-if(!mongoUri){
+if (!mongoUri) {
   throw new Error("MongoUri not found.");
 }
 
@@ -21,7 +21,7 @@ export async function runDb() {
   try {
     await mongodbClient.connect();
 
-    await mongodbClient.db('Bloggers').command({ping: 1})
+    await mongodbClient.db("Bloggers").command({ ping: 1 });
 
     console.log("Database Connected");
   } catch {

@@ -3,9 +3,9 @@ import {
   DeleteCurrentBlogType,
   GetCurrentBlogType,
   UpdateBlogType,
-} from "./types";
-import { blogsCollection } from "../db/db";
-import { BlogType } from "../db/types";
+} from "../../core/types/repositories-types";
+import { blogsCollection } from "../../db/db";
+import { BlogType } from "../../core/types/db-types";
 
 export const blogsRepository = {
   getAllBlogs: async () => {

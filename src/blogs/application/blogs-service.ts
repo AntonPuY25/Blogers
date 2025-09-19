@@ -1,11 +1,11 @@
 import { blogsRepository } from "../repositories/blogs-repository";
-import { CreateBlogTypeForService } from "./types";
-import { BlogType } from "../db/types";
+import { BlogType } from "../../core/types/db-types";
 import {
   DeleteCurrentBlogType,
   GetCurrentBlogType,
   UpdateBlogType,
-} from "../repositories/types";
+} from "../../core/types/repositories-types";
+import { CreateBlogTypeForService } from "./dtos/blogs-types";
 
 export const blogsService = {
   getAllBlogs: async () => {

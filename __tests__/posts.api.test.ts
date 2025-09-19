@@ -4,8 +4,8 @@ import { setupApp } from "../src/app";
 import {
   ADMIN_PASSWORD,
   ADMIN_USERNAME,
-} from "../src/middlewares/auth-middleware";
-import { BlogType, CreateBlogType, UpdatePostType } from "../src/db/types";
+} from "../src/core/middlewares/auth-middleware";
+import { BlogType, CreateBlogType, UpdatePostType } from "../src/core/types/db-types";
 
 describe("Posts tests", () => {
   const app = express();

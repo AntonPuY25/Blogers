@@ -1,13 +1,14 @@
 import express from "express";
 import { setupApp } from "./app";
 import { runDb } from "./db/db";
+import { SETTINGS } from "./core/settings/settings";
 
 // создание приложения
 const app = express();
 setupApp(app);
 
 // порт приложения
-const PORT = process.env.PORT || 3000;
+const PORT = SETTINGS.PORT;
 
 // запуск приложения
 app.listen(PORT, async () => {
