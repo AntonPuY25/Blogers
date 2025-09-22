@@ -13,7 +13,6 @@ const PORT = SETTINGS.PORT;
 // запуск приложения
 app.listen(PORT, async () => {
 
-
   await runDb();
 
   console.log(`Example app listening on port ${PORT}`);

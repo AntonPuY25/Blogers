@@ -7,20 +7,33 @@ import {
 import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
 import { GetAllBlogsTypeForRepositories } from "./types";
+import { getSkipPagesAndLimitForBlogPagination } from "./helpers";
 
 export const blogsRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
+    const { skip, limit } = getSkipPagesAndLimitForBlogPagination({
+      pageNumber: params.pageNumber,
+      pageSize: params.pageSize,
+    });
+
+
+
     const searchQuery = params?.searchNameTerm
       ? { name: { $regex: params.searchNameTerm, $options: "i" } }
       : {};
 
-    const sortParams = {
-      [params?.sortBy]: params.sortDirection,
-    };
+    const sortParams =
+      params?.sortBy && params?.sortDirection
+        ? {
+            [params.sortBy]: params.sortDirection,
+          }
+        : {};
 
     return blogsCollection
       .find(searchQuery)
       .sort(sortParams)
+      .skip(skip)
+      .limit(limit)
       .project({ _id: 0 })
       .toArray();
   },

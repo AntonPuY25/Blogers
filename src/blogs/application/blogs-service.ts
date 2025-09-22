@@ -10,8 +10,6 @@ import { CreateBlogTypeForService, GetAllBlogsTypeForService } from "./types";
 export const blogsService = {
   getAllBlogs: async ({...params}:GetAllBlogsTypeForService) => {
 
-    console.log(params,'params');
-
     return await blogsRepository.getAllBlogs(params);
   },
 
