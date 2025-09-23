@@ -1,6 +1,6 @@
 import { GetSkipPagesAndLimitForBlogPaginationProps } from "./types";
 
-export const getSkipPagesAndLimitForBlogPagination = ({
+export const getSkipPagesAndLimitForBlogAndSortPagination = ({
   pageSize,
   pageNumber,
 }: GetSkipPagesAndLimitForBlogPaginationProps) => {

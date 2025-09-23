@@ -14,19 +14,21 @@ import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middlewar
 import {
   descriptionBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
-  nameBlogMaxLengthValidate, querySearchNameTermValidate,
-  websiteUrlBlogMaxLengthValidate
+  nameBlogMaxLengthValidate,
+  querySearchNameTermValidate,
+  websiteUrlBlogMaxLengthValidate,
 } from "../../core/middlewares/validate-blogs-middleware";
 import { blogsService } from "../application/blogs-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
-import { BlogSortFields } from "./blog-sort-fields";
+import { SortFields } from "./sort-fields";
 import { GetAppBlogsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import { postService } from "../../posts/application/post-service";
 
 export const blogsRouter = Router();
 
 blogsRouter.get(
   "/",
-  paginationAndSortingValidation(BlogSortFields),
+  paginationAndSortingValidation(SortFields),
   querySearchNameTermValidate,
   getBlogValidationErrorsMiddieWare,
   async (
@@ -119,5 +121,32 @@ blogsRouter.delete(
     }
 
     res.sendStatus(204);
+  },
+);
+
+blogsRouter.get(
+  "/:blogId/posts",
+  paginationAndSortingValidation(SortFields),
+  getBlogValidationErrorsMiddieWare,
+  async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+    const currentBlogId = req.params.blogId || "";
+
+    const currentBlog = await blogsService.getCurrentBlog({
+      blogId: currentBlogId,
+    });
+
+    if (!currentBlog) {
+      return res.sendStatus(404);
+    }
+
+    const allPostForCurrentBlog = await postService.getAllPostsForCurrentBlog({
+      blogId: currentBlog.id,
+    });
+
+    if (!allPostForCurrentBlog) {
+      return res.sendStatus(404);
+    }
+
+    res.status(200).send(allPostForCurrentBlog);
   },
 );

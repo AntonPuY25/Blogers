@@ -1,11 +1,32 @@
-import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { blogsCollection, postsCollection } from "../../db/db";
+import { GetAllPostsForCurrentBlogProps } from "../application/interfaces";
+import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import { getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
 
 export const postRepository = {
-  getAllPosts: async () =>
-    postsCollection.find({}).project({ _id: 0 }).toArray(),
+  getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
+    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
+      pageNumber: props.pageNumber,
+      pageSize: props.pageSize,
+    });
+
+    const sortParams =
+      props?.sortBy && props?.sortDirection
+        ? {
+            [props.sortBy]: props.sortDirection,
+          }
+        : {};
+
+    return postsCollection
+      .find({})
+      .skip(skip)
+      .limit(limit)
+      .sort(sortParams)
+      .project({ _id: 0 })
+      .toArray();
+  },
 
   foundCurrentBlogForPost: async (blogId: string) => {
     const currentBlog = await blogsCollection.findOne(
@@ -67,5 +88,19 @@ export const postRepository = {
     const deletedPost = await postsCollection.deleteOne({ id: postId });
 
     return deletedPost.deletedCount;
+  },
+
+  getAllPostsForCurrentBlog: async ({
+    blogId,
+  }: GetAllPostsForCurrentBlogProps) => {
+    const currentPost = await postsCollection
+      .find({ blogId }, { projection: { _id: 0 } })
+      .toArray();
+
+    if (!currentPost) {
+      return null;
+    }
+
+    return currentPost;
   },
 };

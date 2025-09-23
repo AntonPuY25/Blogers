@@ -1,10 +1,15 @@
-import { Request, Response, Router } from "express";
+import { Response, Router } from "express";
 import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
+  RequestWithQuery,
 } from "../../core/types/basic-url-types";
-import { CreatePostRequest, GetCurrentPostId, UpdatePostData } from "../../core/types/routers-types";
+import {
+  CreatePostRequest,
+  GetCurrentPostId,
+  UpdatePostData,
+} from "../../core/types/routers-types";
 import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import {
   blogIdPostRequiredValidate,
@@ -14,13 +19,27 @@ import {
   titlePostMaxLengthValidate,
 } from "../../core/middlewares/validate-posts-middleware";
 import { postService } from "../application/post-service";
+import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
+import { SortFields } from "../../blogs/routers/sort-fields";
+import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 
 export const postRouter = Router();
 
-postRouter.get("/", async (req: Request, res: Response) => {
-  const allPosts = await postService.getAllPosts();
-  res.status(200).send(allPosts);
-});
+postRouter.get(
+  "/",
+  paginationAndSortingValidation(SortFields),
+  getPostsValidationErrorsMiddieWare,
+  async (
+    req: RequestWithQuery<GetAppPostsPaginationWithSortWithSearchQuery>,
+    res: Response,
+  ) => {
+    const queryParamsForGetBlogs =
+      req.query as GetAppPostsPaginationWithSortWithSearchQuery;
+
+    const allPosts = await postService.getAllPosts(queryParamsForGetBlogs);
+    res.status(200).send(allPosts);
+  },
+);
 
 postRouter.post(
   "/",
@@ -29,9 +48,9 @@ postRouter.post(
   shortDescriptionPostMaxLengthValidate,
   contentPostMaxLengthValidate,
   blogIdPostRequiredValidate,
-   getPostsValidationErrorsMiddieWare,
+  getPostsValidationErrorsMiddieWare,
   async (req: RequestWithBody<CreatePostRequest>, res: Response) => {
-    const newPost =await postService.createNewPost({ ...req.body });
+    const newPost = await postService.createNewPost({ ...req.body });
 
     if (!newPost) {
       return res.status(400).send({
@@ -53,7 +72,7 @@ postRouter.get(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const currentPost =await postService.getPostById(currentPostId);
+    const currentPost = await postService.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);
@@ -91,13 +110,13 @@ postRouter.put(
       });
     }
 
-    const currentPost =await postService.getPostById(currentPostId);
+    const currentPost = await postService.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);
     }
 
-    const updatedPost =await postService.updatedPost({
+    const updatedPost = await postService.updatedPost({
       postId: currentPost.id,
       title,
       shortDescription,

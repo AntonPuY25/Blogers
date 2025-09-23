@@ -7,11 +7,11 @@ import {
 import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
 import { GetAllBlogsTypeForRepositories } from "./types";
-import { getSkipPagesAndLimitForBlogPagination } from "./helpers";
+import { getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
 
 export const blogsRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
-    const { skip, limit } = getSkipPagesAndLimitForBlogPagination({
+    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
       pageNumber: params.pageNumber,
       pageSize: params.pageSize,
     });

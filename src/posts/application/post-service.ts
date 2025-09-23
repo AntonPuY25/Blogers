@@ -2,9 +2,12 @@ import { postRepository } from "../repositories/post-repository";
 import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
+import { GetAllPostsForCurrentBlogProps } from "./interfaces";
+import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 
 export const postService = {
-  getAllPosts: async () => await postRepository.getAllPosts(),
+  getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) =>
+    await postRepository.getAllPosts(props),
 
   foundCurrentBlogForPost: async (blogId: string) => {
     const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);
@@ -66,4 +69,11 @@ export const postService = {
   deletePost: async (postId: string) => {
     return await postRepository.deletePost(postId);
   },
+
+  getAllPostsForCurrentBlog: async ({
+    blogId,
+  }: GetAllPostsForCurrentBlogProps) =>
+    await postRepository.getAllPostsForCurrentBlog({
+      blogId,
+    }),
 };
