@@ -10,3 +10,8 @@ export interface GetSkipPagesAndLimitForBlogPaginationProps
   extends Partial<
     Pick<PaginationAndSorting<string>, "pageNumber" | "pageSize">
   > {}
+
+export interface GetPagesCountProps {
+  totalCount: number;
+  pageSize: number;
+}

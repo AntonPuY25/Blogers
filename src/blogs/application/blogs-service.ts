@@ -6,11 +6,24 @@ import {
   UpdateBlogType,
 } from "../../core/types/repositories-types";
 import { CreateBlogTypeForService, GetAllBlogsTypeForService } from "./types";
+import { getPagesCount } from "../repositories/helpers";
 
 export const blogsService = {
-  getAllBlogs: async ({...params}:GetAllBlogsTypeForService) => {
+  getAllBlogs: async ({ ...params }: GetAllBlogsTypeForService) => {
+    const { totalCount, items } = await blogsRepository.getAllBlogs(params);
 
-    return await blogsRepository.getAllBlogs(params);
+    const pagesCount = getPagesCount({
+      totalCount,
+      pageSize: params.pageSize || 0,
+    });
+
+    return {
+      pagesCount,
+      page: Number(params?.pageNumber) || 1,
+      pageSize: Number(params?.pageSize) || 10,
+      totalCount,
+      items,
+    };
   },
 
   createBlog: async ({

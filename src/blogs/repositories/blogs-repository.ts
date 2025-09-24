@@ -16,8 +16,6 @@ export const blogsRepository = {
       pageSize: params.pageSize,
     });
 
-
-
     const searchQuery = params?.searchNameTerm
       ? { name: { $regex: params.searchNameTerm, $options: "i" } }
       : {};
@@ -29,13 +27,19 @@ export const blogsRepository = {
           }
         : {};
 
-    return blogsCollection
-      .find(searchQuery)
-      .sort(sortParams)
-      .skip(skip)
-      .limit(limit)
-      .project({ _id: 0 })
-      .toArray();
+    const [items, totalCount] = await Promise.all([
+      blogsCollection
+        .find(searchQuery)
+        .sort(sortParams)
+        .skip(skip)
+        .limit(limit)
+        .project({ _id: 0 })
+        .toArray(),
+
+      blogsCollection.countDocuments(searchQuery), // Подсчет общего количества
+    ]);
+
+    return { items, totalCount };
   },
 
   createBlog: async (newBlog: BlogType) => {

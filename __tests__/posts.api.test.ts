@@ -38,10 +38,10 @@ describe("Posts tests", () => {
 
     const getBlogs = await request(app).get("/blogs").expect(200);
 
-    expect(Array.isArray(getBlogs.body)).toBeTruthy();
-    expect(getBlogs.body[0]?.name).toBe(testNewBlogData.name);
-    expect(getBlogs.body[0]?.description).toBe(testNewBlogData.description);
-    expect(getBlogs.body[0]?.websiteUrl).toBe(testNewBlogData.websiteUrl);
+    expect(Array.isArray(getBlogs.body.items)).toBeTruthy();
+    expect(getBlogs.body.items?.[0]?.name).toBe(testNewBlogData.name);
+    expect(getBlogs.body.items?.[0]?.description).toBe(testNewBlogData.description);
+    expect(getBlogs.body.items?.[0]?.websiteUrl).toBe(testNewBlogData.websiteUrl);
 
     const getCurrentBlog = await request(app)
       .get(`/blogs/${createdBlog.body.id}`)

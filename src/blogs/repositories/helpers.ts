@@ -1,4 +1,7 @@
-import { GetSkipPagesAndLimitForBlogPaginationProps } from "./types";
+import {
+  GetPagesCountProps,
+  GetSkipPagesAndLimitForBlogPaginationProps,
+} from "./types";
 
 export const getSkipPagesAndLimitForBlogAndSortPagination = ({
   pageSize,
@@ -8,4 +11,8 @@ export const getSkipPagesAndLimitForBlogAndSortPagination = ({
     skip: pageNumber && pageSize ? Number((pageNumber - 1) * pageSize) : 0,
     limit: Number(pageSize) || 10,
   };
+};
+
+export const getPagesCount = ({ pageSize, totalCount }: GetPagesCountProps) => {
+  return Math.ceil(totalCount / pageSize);
 };
