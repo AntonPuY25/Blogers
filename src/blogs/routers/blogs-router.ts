@@ -3,6 +3,7 @@ import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
+  RequestWithParamsAndQuery,
   RequestWithQuery,
 } from "../../core/types/basic-url-types";
 import {
@@ -21,7 +22,10 @@ import {
 import { blogsService } from "../application/blogs-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
 import { SortFields } from "./sort-fields";
-import { GetAppBlogsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import {
+  GetAppBlogsPaginationWithSortWithSearchQuery,
+  GetAppPostsPaginationWithSortWithSearchQuery
+} from "../../core/types/pagintaion-types";
 import { postService } from "../../posts/application/post-service";
 import {
   contentPostMaxLengthValidate,
@@ -135,8 +139,17 @@ blogsRouter.get(
   "/:blogId/posts",
   paginationAndSortingValidation(SortFields),
   getBlogValidationErrorsMiddieWare,
-  async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
+  async (
+    req: RequestWithParamsAndQuery<
+      GetCurrentBlogType,
+      GetAppPostsPaginationWithSortWithSearchQuery
+    >,
+    res: Response,
+  ) => {
     const currentBlogId = req.params.blogId || "";
+
+    const queryParamsForGetPosts =
+      req.query as GetAppPostsPaginationWithSortWithSearchQuery;
 
     const currentBlog = await blogsService.getCurrentBlog({
       blogId: currentBlogId,
@@ -148,6 +161,7 @@ blogsRouter.get(
 
     const allPostForCurrentBlog = await postService.getAllPostsForCurrentBlog({
       blogId: currentBlog.id,
+      ...queryParamsForGetPosts
     });
 
     if (!allPostForCurrentBlog) {

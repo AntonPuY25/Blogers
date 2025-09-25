@@ -4,6 +4,7 @@ import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { GetAllPostsForCurrentBlogProps } from "./interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import { getPagesCount } from "../../blogs/repositories/helpers";
 
 export const postService = {
   getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) =>
@@ -70,10 +71,21 @@ export const postService = {
     return await postRepository.deletePost(postId);
   },
 
-  getAllPostsForCurrentBlog: async ({
-    blogId,
-  }: GetAllPostsForCurrentBlogProps) =>
-    await postRepository.getAllPostsForCurrentBlog({
-      blogId,
-    }),
+  getAllPostsForCurrentBlog: async (props: GetAllPostsForCurrentBlogProps) => {
+    const { totalCount, items } =
+      await postRepository.getAllPostsForCurrentBlog(props);
+
+    const pagesCount = getPagesCount({
+      totalCount,
+      pageSize: props.pageSize || 0,
+    });
+
+    return {
+      pagesCount,
+      page: Number(props?.pageNumber) || 1,
+      pageSize: Number(props?.pageSize) || 10,
+      totalCount,
+      items,
+    };
+  },
 };

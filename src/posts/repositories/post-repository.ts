@@ -92,15 +92,35 @@ export const postRepository = {
 
   getAllPostsForCurrentBlog: async ({
     blogId,
+    pageSize,
+    pageNumber,
+    sortBy,
+    sortDirection,
   }: GetAllPostsForCurrentBlogProps) => {
-    const currentPost = await postsCollection
-      .find({ blogId }, { projection: { _id: 0 } })
-      .toArray();
+    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
+      pageNumber,
+      pageSize,
+    });
 
-    if (!currentPost) {
-      return null;
-    }
+    const sortParams =
+      sortBy && sortDirection
+        ? {
+            [sortBy]: sortDirection,
+          }
+        : {};
 
-    return currentPost;
+    const [items, totalCount] = await Promise.all([
+      postsCollection
+        .find({ blogId })
+        .skip(skip)
+        .limit(limit)
+        .sort(sortParams)
+        .project({ _id: 0 })
+        .toArray(),
+
+      postsCollection.countDocuments(),
+    ]);
+
+    return { items, totalCount };
   },
 };
