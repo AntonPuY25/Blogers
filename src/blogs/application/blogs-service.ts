@@ -14,7 +14,7 @@ export const blogsService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: params.pageSize || 0,
+      pageSize: params.pageSize || 10,
     });
 
     return {
