@@ -16,3 +16,7 @@ export const getSkipPagesAndLimitForBlogAndSortPagination = ({
 export const getPagesCount = ({ pageSize, totalCount }: GetPagesCountProps) => {
   return Math.ceil(totalCount / pageSize);
 };
+
+export const convertSortDirection = (direction: string): 1 | -1 => {
+  return direction === 'asc' ? 1 : -1;
+};

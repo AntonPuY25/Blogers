@@ -7,7 +7,7 @@ import {
 import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
 import { GetAllBlogsTypeForRepositories } from "./types";
-import { getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
+import { convertSortDirection, getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
 import { SortDirection } from "mongodb";
 
 export const blogsRepository = {
@@ -24,7 +24,7 @@ export const blogsRepository = {
     const sortParams =
       params?.sortBy && params?.sortDirection
         ? {
-            [params.sortBy]: params.sortDirection,
+            [params.sortBy]: convertSortDirection(params.sortDirection),
           }
         : { createdAt: -1 as SortDirection };
 

@@ -3,7 +3,10 @@ import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { blogsCollection, postsCollection } from "../../db/db";
 import { GetAllPostsForCurrentBlogProps } from "../application/interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import { getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
+import {
+  convertSortDirection,
+  getSkipPagesAndLimitForBlogAndSortPagination,
+} from "../../blogs/repositories/helpers";
 import { SortDirection } from "mongodb";
 
 export const postRepository = {
@@ -15,7 +18,7 @@ export const postRepository = {
 
     const sortParams =
       props?.sortBy && props?.sortDirection
-        ? { [props.sortBy]: props.sortDirection }
+        ? { [props.sortBy]: convertSortDirection(props.sortDirection) }
         : { createdAt: -1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
@@ -110,7 +113,7 @@ export const postRepository = {
     const sortParams =
       sortBy && sortDirection
         ? {
-            [sortBy]: sortDirection,
+            [sortBy]: convertSortDirection(sortDirection),
           }
         : { createdAt: -1 as SortDirection };
 
