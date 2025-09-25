@@ -8,6 +8,7 @@ import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
 import { GetAllBlogsTypeForRepositories } from "./types";
 import { getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
+import { SortDirection } from "mongodb";
 
 export const blogsRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
@@ -25,7 +26,7 @@ export const blogsRepository = {
         ? {
             [params.sortBy]: params.sortDirection,
           }
-        : {};
+        : { createdAt: -1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
       blogsCollection

@@ -12,7 +12,7 @@ export const postService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: props.pageSize || 0,
+      pageSize: props.pageSize || 10,
     });
 
     return {
@@ -91,7 +91,7 @@ export const postService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: props.pageSize || 0,
+      pageSize: props.pageSize || 10,
     });
 
     return {

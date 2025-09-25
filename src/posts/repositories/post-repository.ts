@@ -4,6 +4,7 @@ import { blogsCollection, postsCollection } from "../../db/db";
 import { GetAllPostsForCurrentBlogProps } from "../application/interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 import { getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
+import { SortDirection } from "mongodb";
 
 export const postRepository = {
   getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
@@ -14,10 +15,8 @@ export const postRepository = {
 
     const sortParams =
       props?.sortBy && props?.sortDirection
-        ? {
-            [props.sortBy]: props.sortDirection,
-          }
-        : {};
+        ? { [props.sortBy]: props.sortDirection }
+        : { createdAt: -1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection
@@ -28,10 +27,10 @@ export const postRepository = {
         .project({ _id: 0 })
         .toArray(),
 
-      postsCollection.countDocuments()
-    ])
+      postsCollection.countDocuments(),
+    ]);
 
-    return {items, totalCount};
+    return { items, totalCount };
   },
 
   foundCurrentBlogForPost: async (blogId: string) => {
@@ -113,7 +112,7 @@ export const postRepository = {
         ? {
             [sortBy]: sortDirection,
           }
-        : {};
+        : { createdAt: -1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection
