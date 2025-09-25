@@ -7,8 +7,22 @@ import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/p
 import { getPagesCount } from "../../blogs/repositories/helpers";
 
 export const postService = {
-  getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) =>
-    await postRepository.getAllPosts(props),
+  getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
+    const { totalCount, items } = await postRepository.getAllPosts(props);
+
+    const pagesCount = getPagesCount({
+      totalCount,
+      pageSize: props.pageSize || 0,
+    });
+
+    return {
+      pagesCount,
+      page: Number(props?.pageNumber) || 1,
+      pageSize: Number(props?.pageSize) || 10,
+      totalCount,
+      items,
+    };
+  },
 
   foundCurrentBlogForPost: async (blogId: string) => {
     const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);

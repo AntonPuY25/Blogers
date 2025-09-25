@@ -19,13 +19,19 @@ export const postRepository = {
           }
         : {};
 
-    return postsCollection
-      .find({})
-      .skip(skip)
-      .limit(limit)
-      .sort(sortParams)
-      .project({ _id: 0 })
-      .toArray();
+    const [items, totalCount] = await Promise.all([
+      postsCollection
+        .find({})
+        .skip(skip)
+        .limit(limit)
+        .sort(sortParams)
+        .project({ _id: 0 })
+        .toArray(),
+
+      postsCollection.countDocuments()
+    ])
+
+    return {items, totalCount};
   },
 
   foundCurrentBlogForPost: async (blogId: string) => {
