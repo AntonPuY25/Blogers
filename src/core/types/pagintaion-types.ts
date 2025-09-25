@@ -1,5 +1,5 @@
-import { SortDirection } from "mongodb";
 import { SortFields } from "../../blogs/routers/sort-fields";
+import { SortDirection } from "./sort-types";
 
 export type PaginationAndSorting<S> = {
   pageNumber: number;

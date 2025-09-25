@@ -123,7 +123,7 @@ export const postRepository = {
         .project({ _id: 0 })
         .toArray(),
 
-      postsCollection.countDocuments(),
+      postsCollection.countDocuments({ blogId }),
     ]);
 
     return { items, totalCount };
