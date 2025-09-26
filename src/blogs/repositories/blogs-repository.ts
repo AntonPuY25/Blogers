@@ -1,5 +1,4 @@
 import {
-  CreateBlogTypeForRepositories,
   DeleteCurrentBlogType,
   GetCurrentBlogType,
   UpdateBlogType,
@@ -7,8 +6,7 @@ import {
 import { blogsCollection } from "../../db/db";
 import { BlogType } from "../../core/types/db-types";
 import { GetAllBlogsTypeForRepositories } from "./types";
-import { convertSortDirection, getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
-import { SortDirection } from "mongodb";
+import { getSkipPagesAndLimitForBlogAndSortPagination } from "./helpers";
 
 export const blogsRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
@@ -21,12 +19,7 @@ export const blogsRepository = {
       ? { name: { $regex: params.searchNameTerm, $options: "i" } }
       : {};
 
-    const sortParams =
-      params?.sortBy && params?.sortDirection
-        ? {
-            [params.sortBy]: convertSortDirection(params.sortDirection),
-          }
-        : { createdAt: -1 as SortDirection };
+    const sortParams = { [params.sortBy]: params.sortDirection };
 
     const [items, totalCount] = await Promise.all([
       blogsCollection

@@ -1,12 +1,12 @@
 import { query } from "express-validator";
 
 // Дефолтные значения
-import { SortDirection } from "../types/sort-types";
+import { SortDirectionTypes } from "../types/sort-types";
 import { PaginationAndSorting } from "../types/pagintaion-types";
 
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
+const DEFAULT_SORT_DIRECTION = SortDirectionTypes.Desc;
 const DEFAULT_SORT_BY = "createdAt";
 
 export const paginationAndSortingDefault: PaginationAndSorting<string> = {
@@ -54,9 +54,9 @@ export function paginationAndSortingValidation<T extends string>(
     query("sortDirection")
       .optional()
       .default(DEFAULT_SORT_DIRECTION)
-      .isIn(Object.values(SortDirection))
+      .isIn(Object.values(SortDirectionTypes))
       .withMessage(
-        `Sort direction must be one of: ${Object.values(SortDirection).join(", ")}`,
+        `Sort direction must be one of: ${Object.values(SortDirectionTypes).join(", ")}`,
       ),
   ];
 }

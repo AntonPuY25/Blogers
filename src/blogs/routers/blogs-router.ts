@@ -24,7 +24,7 @@ import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-
 import { SortFields } from "./sort-fields";
 import {
   GetAppBlogsPaginationWithSortWithSearchQuery,
-  GetAppPostsPaginationWithSortWithSearchQuery
+  GetAppPostsPaginationWithSortWithSearchQuery,
 } from "../../core/types/pagintaion-types";
 import { postService } from "../../posts/application/post-service";
 import {
@@ -33,6 +33,7 @@ import {
   titlePostMaxLengthValidate,
 } from "../../core/middlewares/validate-posts-middleware";
 import { CreatePostForCurrentBlogProps } from "../../posts/application/interfaces";
+import { setDefaultSortAndPaginationIfNotExist } from "../repositories/helpers";
 
 export const blogsRouter = Router();
 
@@ -42,11 +43,15 @@ blogsRouter.get(
   querySearchNameTermValidate,
   getBlogValidationErrorsMiddieWare,
   async (
-    req: RequestWithQuery<GetAppBlogsPaginationWithSortWithSearchQuery>,
+    req: RequestWithQuery<
+      Partial<GetAppBlogsPaginationWithSortWithSearchQuery>
+    >,
     res: Response,
   ) => {
-    const queryParamsForGetBlogs =
-      req.query as GetAppBlogsPaginationWithSortWithSearchQuery;
+    const queryParamsForGetBlogs = setDefaultSortAndPaginationIfNotExist(
+      req.query,
+    ) as GetAppBlogsPaginationWithSortWithSearchQuery;
+
 
     const allBlogs = await blogsService.getAllBlogs(queryParamsForGetBlogs);
 
@@ -142,14 +147,15 @@ blogsRouter.get(
   async (
     req: RequestWithParamsAndQuery<
       GetCurrentBlogType,
-      GetAppPostsPaginationWithSortWithSearchQuery
+      Partial<GetAppPostsPaginationWithSortWithSearchQuery>
     >,
     res: Response,
   ) => {
     const currentBlogId = req.params.blogId || "";
 
-    const queryParamsForGetPosts =
-      req.query as GetAppPostsPaginationWithSortWithSearchQuery;
+    const queryParamsForGetPosts = setDefaultSortAndPaginationIfNotExist(
+      req.query,
+    ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
     const currentBlog = await blogsService.getCurrentBlog({
       blogId: currentBlogId,
@@ -161,7 +167,7 @@ blogsRouter.get(
 
     const allPostForCurrentBlog = await postService.getAllPostsForCurrentBlog({
       blogId: currentBlog.id,
-      ...queryParamsForGetPosts
+      ...queryParamsForGetPosts,
     });
 
     if (!allPostForCurrentBlog) {

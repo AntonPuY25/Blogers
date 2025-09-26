@@ -1,15 +1,15 @@
 import { SortFields } from "../../blogs/routers/sort-fields";
-import { SortDirection } from "./sort-types";
+import { SortDirectionTypes } from "./sort-types";
 
 export type PaginationAndSorting<S> = {
   pageNumber: number;
   pageSize: number;
   sortBy: S | "createdAt";
-  sortDirection: SortDirection;
+  sortDirection: SortDirectionTypes;
 };
 
 export interface GetAppBlogsPaginationWithSortWithSearchQuery
-  extends Partial<PaginationAndSorting<SortFields>> {
+  extends PaginationAndSorting<SortFields> {
   searchNameTerm?: string;
 }
 

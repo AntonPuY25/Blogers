@@ -3,11 +3,8 @@ import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { blogsCollection, postsCollection } from "../../db/db";
 import { GetAllPostsForCurrentBlogProps } from "../application/interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import {
-  convertSortDirection,
-  getSkipPagesAndLimitForBlogAndSortPagination,
-} from "../../blogs/repositories/helpers";
-import { SortDirection } from "mongodb";
+import { getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
+import { SortDirectionTypes } from "../../core/types/sort-types";
 
 export const postRepository = {
   getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
@@ -16,10 +13,7 @@ export const postRepository = {
       pageSize: props.pageSize,
     });
 
-    const sortParams =
-      props?.sortBy && props?.sortDirection
-        ? { [props.sortBy]: convertSortDirection(props.sortDirection) }
-        : { createdAt: -1 as SortDirection };
+    const sortParams = { [props.sortBy]: props.sortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection
@@ -110,12 +104,7 @@ export const postRepository = {
       pageSize,
     });
 
-    const sortParams =
-      sortBy && sortDirection
-        ? {
-            [sortBy]: convertSortDirection(sortDirection),
-          }
-        : { createdAt: -1 as SortDirection };
+    const sortParams = { [sortBy]: sortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection

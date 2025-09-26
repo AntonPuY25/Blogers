@@ -21,7 +21,11 @@ import {
 import { postService } from "../application/post-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
 import { SortFields } from "../../blogs/routers/sort-fields";
-import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import {
+  GetAppBlogsPaginationWithSortWithSearchQuery,
+  GetAppPostsPaginationWithSortWithSearchQuery,
+} from "../../core/types/pagintaion-types";
+import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
 
 export const postRouter = Router();
 
@@ -30,11 +34,14 @@ postRouter.get(
   paginationAndSortingValidation(SortFields),
   getPostsValidationErrorsMiddieWare,
   async (
-    req: RequestWithQuery<GetAppPostsPaginationWithSortWithSearchQuery>,
+    req: RequestWithQuery<
+      Partial<GetAppPostsPaginationWithSortWithSearchQuery>
+    >,
     res: Response,
   ) => {
-    const queryParamsForGetBlogs =
-      req.query as GetAppPostsPaginationWithSortWithSearchQuery;
+    const queryParamsForGetBlogs = setDefaultSortAndPaginationIfNotExist(
+      req.query,
+    ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
     const allPosts = await postService.getAllPosts(queryParamsForGetBlogs);
     res.status(200).send(allPosts);
