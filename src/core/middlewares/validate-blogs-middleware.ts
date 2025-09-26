@@ -18,7 +18,7 @@ export const getBlogValidationErrorsMiddieWare = (
     return msg;
   });
 
-  res.status(400).send({ errorsMessages: result });
+  res.status(401).send({ errorsMessages: result });
 };
 
 export const nameBlogMaxLengthValidate = body("name")
