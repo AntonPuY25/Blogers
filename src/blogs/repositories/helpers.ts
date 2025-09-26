@@ -18,5 +18,5 @@ export const getPagesCount = ({ pageSize, totalCount }: GetPagesCountProps) => {
 };
 
 export const convertSortDirection = (direction: string): 1 | -1 => {
-  return direction === 'asc' ? 1 : -1;
+  return direction === 'asc' ? -1 : 1;
 };

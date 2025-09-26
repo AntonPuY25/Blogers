@@ -19,7 +19,7 @@ export const postRepository = {
     const sortParams =
       props?.sortBy && props?.sortDirection
         ? { [props.sortBy]: convertSortDirection(props.sortDirection) }
-        : { createdAt: -1 as SortDirection };
+        : { createdAt: 1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection
