@@ -18,7 +18,7 @@ export const getPostsValidationErrorsMiddieWare = (
     return msg;
   });
 
-  res.status(401).send({ errorsMessages: result });
+  res.status(400).send({ errorsMessages: result });
 };
 
 export const titlePostMaxLengthValidate = body("title")
