@@ -10,8 +10,8 @@ export const getSkipPagesAndLimitForBlogAndSortPagination = ({
   pageNumber,
 }: GetSkipPagesAndLimitForBlogPaginationProps) => {
   return {
-    skip: pageNumber && pageSize ? Number((pageNumber - 1) * pageSize) : 0,
-    limit: Number(pageSize) || 10,
+    skip:  Number((pageNumber - 1) * pageSize),
+    limit: Number(pageSize),
   };
 };
 

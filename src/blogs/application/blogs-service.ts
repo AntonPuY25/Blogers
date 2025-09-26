@@ -14,13 +14,13 @@ export const blogsService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: params.pageSize || 10,
+      pageSize: params.pageSize,
     });
 
     return {
       pagesCount,
-      page: Number(params?.pageNumber) || 1,
-      pageSize: Number(params?.pageSize) || 10,
+      page: Number(params?.pageNumber),
+      pageSize: Number(params?.pageSize),
       totalCount,
       items,
     };

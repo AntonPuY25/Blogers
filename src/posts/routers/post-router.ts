@@ -44,6 +44,7 @@ postRouter.get(
     ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
     const allPosts = await postService.getAllPosts(queryParamsForGetBlogs);
+
     res.status(200).send(allPosts);
   },
 );

@@ -12,13 +12,13 @@ export const postService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: props.pageSize || 10,
+      pageSize: props.pageSize,
     });
 
     return {
       pagesCount,
-      page: Number(props?.pageNumber) || 1,
-      pageSize: Number(props?.pageSize) || 10,
+      page: Number(props?.pageNumber),
+      pageSize: Number(props?.pageSize),
       totalCount,
       items,
     };
@@ -91,13 +91,13 @@ export const postService = {
 
     const pagesCount = getPagesCount({
       totalCount,
-      pageSize: props.pageSize || 10,
+      pageSize: props.pageSize,
     });
 
     return {
       pagesCount,
-      page: Number(props?.pageNumber) || 1,
-      pageSize: Number(props?.pageSize) || 10,
+      page: Number(props?.pageNumber),
+      pageSize: Number(props?.pageSize),
       totalCount,
       items,
     };
