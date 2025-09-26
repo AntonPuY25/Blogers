@@ -19,14 +19,14 @@ export const postRepository = {
     const sortParams =
       props?.sortBy && props?.sortDirection
         ? { [props.sortBy]: convertSortDirection(props.sortDirection) }
-        : { createdAt: 1 as SortDirection };
+        : { createdAt: -1 as SortDirection };
 
     const [items, totalCount] = await Promise.all([
       postsCollection
         .find({})
+        .sort(sortParams)
         .skip(skip)
         .limit(limit)
-        .sort(sortParams)
         .project({ _id: 0 })
         .toArray(),
 
@@ -120,9 +120,9 @@ export const postRepository = {
     const [items, totalCount] = await Promise.all([
       postsCollection
         .find({ blogId })
+        .sort(sortParams)
         .skip(skip)
         .limit(limit)
-        .sort(sortParams)
         .project({ _id: 0 })
         .toArray(),
 
