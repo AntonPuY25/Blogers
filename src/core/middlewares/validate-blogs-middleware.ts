@@ -8,10 +8,16 @@ export const getBlogValidationErrorsMiddieWare = (
 ) => {
   const errors = validationResult(req);
 
+  // Добавьте это логирование
+  console.log('Validation errors:', errors.array());
+  console.log('Request query:', req.query);
+  console.log('Request params:', req.params);
+
+
   if (errors.isEmpty()) {
     next();
 
-    return
+    return;
   }
 
   const result = errors.array().map(({ msg }) => {

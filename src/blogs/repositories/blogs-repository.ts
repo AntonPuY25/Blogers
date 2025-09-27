@@ -42,7 +42,7 @@ export const blogsRepository = {
 
       return newBlog;
     } catch (error) {
-      console.error(error);
+      console.warn(error);
     }
   },
 

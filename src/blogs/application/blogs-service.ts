@@ -47,7 +47,7 @@ export const blogsService = {
 
       return blogWithoutMongoId;
     } catch (error) {
-      console.error(error);
+      console.warn(error);
     }
   },
 

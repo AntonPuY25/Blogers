@@ -52,8 +52,6 @@ blogsRouter.get(
       req.query,
     ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
-    console.log(req.query, "req.query");
-
     const allBlogs = await blogsService.getAllBlogs(queryParamsForGetBlogs);
 
     res.status(200).send(allBlogs);
@@ -71,8 +69,6 @@ blogsRouter.post(
     req: RequestWithBody<CreateBlogTypeForRepositories>,
     res: Response,
   ) => {
-    console.log(req.body, "req.body");
-
     const createBlog = await blogsService.createBlog(req.body);
 
     res.status(201).send(createBlog);
@@ -158,7 +154,7 @@ blogsRouter.get(
 
     const queryParamsForGetPosts = setDefaultSortAndPaginationIfNotExist(
       req.query,
-    ) as GetAppBlogsPaginationWithSortWithSearchQuery;
+    ) as GetAppPostsPaginationWithSortWithSearchQuery;
 
     const currentBlog = await blogsService.getCurrentBlog({
       blogId: currentBlogId,
