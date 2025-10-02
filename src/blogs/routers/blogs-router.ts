@@ -34,6 +34,8 @@ import {
 } from "../../core/middlewares/validate-posts-middleware";
 import { CreatePostForCurrentBlogProps } from "../../posts/application/interfaces";
 import { setDefaultSortAndPaginationIfNotExist } from "../repositories/helpers";
+import { blogsQueryRepository } from "../repositories/blog-query-repository";
+import { postQueryRepository } from "../../posts/repositories/post-query-repository";
 
 export const blogsRouter = Router();
 
@@ -52,7 +54,9 @@ blogsRouter.get(
       req.query,
     ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
-    const allBlogs = await blogsService.getAllBlogs(queryParamsForGetBlogs);
+    const allBlogs = await blogsQueryRepository.getAllBlogs(
+      queryParamsForGetBlogs,
+    );
 
     res.status(200).send(allBlogs);
   },
@@ -80,7 +84,7 @@ blogsRouter.get(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId;
 
-    const currentBlog = await blogsService.getCurrentBlog({
+    const currentBlog = await blogsQueryRepository.getCurrentBlog({
       blogId: currentBlogId,
     });
 
@@ -104,8 +108,6 @@ blogsRouter.put(
     res: Response,
   ) => {
     const currentBlogId = req.params.blogId || "";
-
-    const currentQueryParamsFormGetAllBlogs = req.query;
 
     const currentBlog = await blogsService.updateBlog({
       blogId: currentBlogId,
@@ -156,7 +158,7 @@ blogsRouter.get(
       req.query,
     ) as GetAppPostsPaginationWithSortWithSearchQuery;
 
-    const currentBlog = await blogsService.getCurrentBlog({
+    const currentBlog = await blogsQueryRepository.getCurrentBlog({
       blogId: currentBlogId,
     });
 
@@ -164,10 +166,11 @@ blogsRouter.get(
       return res.sendStatus(404);
     }
 
-    const allPostForCurrentBlog = await postService.getAllPostsForCurrentBlog({
-      blogId: currentBlog.id,
-      ...queryParamsForGetPosts,
-    });
+    const allPostForCurrentBlog =
+      await postQueryRepository.getAllPostsForCurrentBlog({
+        blogId: currentBlog.id,
+        ...queryParamsForGetPosts,
+      });
 
     if (!allPostForCurrentBlog) {
       return res.sendStatus(404);
@@ -193,7 +196,7 @@ blogsRouter.post(
   ) => {
     const currentBlogId = req.params.blogId as string;
 
-    const currentBlog = await blogsService.getCurrentBlog({
+    const currentBlog = await blogsQueryRepository.getCurrentBlog({
       blogId: currentBlogId,
     });
 

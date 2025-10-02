@@ -2,45 +2,17 @@ import { postRepository } from "../repositories/post-repository";
 import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
-import { GetAllPostsForCurrentBlogProps } from "./interfaces";
-import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import { getPagesCount } from "../../blogs/repositories/helpers";
+import { postQueryRepository } from "../repositories/post-query-repository";
 
 export const postService = {
-  getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
-    const { totalCount, items } = await postRepository.getAllPosts(props);
-
-    const pagesCount = getPagesCount({
-      totalCount,
-      pageSize: props.pageSize,
-    });
-
-    return {
-      pagesCount,
-      page: Number(props?.pageNumber),
-      pageSize: Number(props?.pageSize),
-      totalCount,
-      items,
-    };
-  },
-
-  foundCurrentBlogForPost: async (blogId: string) => {
-    const currentBlog = await postRepository.foundCurrentBlogForPost(blogId);
-
-    if (!currentBlog) {
-      return null;
-    } else {
-      return currentBlog;
-    }
-  },
-
   createNewPost: async ({
     content,
     shortDescription,
     title,
     blogId,
   }: CreatePostRequest) => {
-    const currentBlog = await postService.foundCurrentBlogForPost(blogId);
+    const currentBlog =
+      await postQueryRepository.foundCurrentBlogForPost(blogId);
 
     if (!currentBlog) {
       return null;
@@ -63,10 +35,6 @@ export const postService = {
     return postWithoutMongoId;
   },
 
-  getPostById: async (postId: string) => {
-    return await postRepository.getPostById(postId);
-  },
-
   updatedPost: async ({
     content,
     shortDescription,
@@ -83,23 +51,5 @@ export const postService = {
 
   deletePost: async (postId: string) => {
     return await postRepository.deletePost(postId);
-  },
-
-  getAllPostsForCurrentBlog: async (props: GetAllPostsForCurrentBlogProps) => {
-    const { totalCount, items } =
-      await postRepository.getAllPostsForCurrentBlog(props);
-
-    const pagesCount = getPagesCount({
-      totalCount,
-      pageSize: props.pageSize,
-    });
-
-    return {
-      pagesCount,
-      page: Number(props?.pageNumber),
-      pageSize: Number(props?.pageSize),
-      totalCount,
-      items,
-    };
   },
 };

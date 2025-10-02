@@ -26,6 +26,7 @@ import {
   GetAppPostsPaginationWithSortWithSearchQuery,
 } from "../../core/types/pagintaion-types";
 import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
+import { postQueryRepository } from "../repositories/post-query-repository";
 
 export const postRouter = Router();
 
@@ -43,7 +44,9 @@ postRouter.get(
       req.query,
     ) as GetAppBlogsPaginationWithSortWithSearchQuery;
 
-    const allPosts = await postService.getAllPosts(queryParamsForGetBlogs);
+    const allPosts = await postQueryRepository.getAllPosts(
+      queryParamsForGetBlogs,
+    );
 
     res.status(200).send(allPosts);
   },
@@ -80,7 +83,7 @@ postRouter.get(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const currentPost = await postService.getPostById(currentPostId);
+    const currentPost = await postQueryRepository.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);
@@ -105,7 +108,8 @@ postRouter.put(
     const currentPostId = req.params.postId || "";
     const { content, shortDescription, title, blogId } = req.body;
 
-    const currentBlog = await postService.foundCurrentBlogForPost(blogId);
+    const currentBlog =
+      await postQueryRepository.foundCurrentBlogForPost(blogId);
 
     if (!currentBlog) {
       return res.status(400).send({
@@ -118,7 +122,7 @@ postRouter.put(
       });
     }
 
-    const currentPost = await postService.getPostById(currentPostId);
+    const currentPost = await postQueryRepository.getPostById(currentPostId);
 
     if (!currentPost) {
       return res.sendStatus(404);

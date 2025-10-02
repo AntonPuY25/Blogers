@@ -2,30 +2,11 @@ import { blogsRepository } from "../repositories/blogs-repository";
 import { BlogType } from "../../core/types/db-types";
 import {
   DeleteCurrentBlogType,
-  GetCurrentBlogType,
   UpdateBlogType,
 } from "../../core/types/repositories-types";
-import { CreateBlogTypeForService, GetAllBlogsTypeForService } from "./types";
-import { getPagesCount } from "../repositories/helpers";
+import { CreateBlogTypeForService } from "./types";
 
 export const blogsService = {
-  getAllBlogs: async ({ ...params }: GetAllBlogsTypeForService) => {
-    const { totalCount, items } = await blogsRepository.getAllBlogs(params);
-
-    const pagesCount = getPagesCount({
-      totalCount,
-      pageSize: params.pageSize,
-    });
-
-    return {
-      pagesCount,
-      page: Number(params?.pageNumber),
-      pageSize: Number(params?.pageSize),
-      totalCount,
-      items,
-    };
-  },
-
   createBlog: async ({
     name,
     websiteUrl,
@@ -49,16 +30,6 @@ export const blogsService = {
     } catch (error) {
       console.warn(error);
     }
-  },
-
-  getCurrentBlog: async ({ blogId }: GetCurrentBlogType) => {
-    const blog = await blogsRepository.getCurrentBlog({ blogId });
-
-    if (!blog) {
-      return null;
-    }
-
-    return blog;
   },
 
   updateBlog: async ({
