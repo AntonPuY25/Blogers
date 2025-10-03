@@ -19,20 +19,20 @@ import {
   querySearchNameTermValidate,
   websiteUrlBlogMaxLengthValidate,
 } from "../../core/middlewares/validate-blogs-middleware";
-import { blogsService } from "../application/blogs-service";
+import { blogsService } from "../service/blogs-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
 import { SortFields } from "./sort-fields";
 import {
   GetAppBlogsPaginationWithSortWithSearchQuery,
   GetAppPostsPaginationWithSortWithSearchQuery,
 } from "../../core/types/pagintaion-types";
-import { postService } from "../../posts/application/post-service";
+import { postService } from "../../posts/service/post-service";
 import {
   contentPostMaxLengthValidate,
   shortDescriptionPostMaxLengthValidate,
   titlePostMaxLengthValidate,
 } from "../../core/middlewares/validate-posts-middleware";
-import { CreatePostForCurrentBlogProps } from "../../posts/application/interfaces";
+import { CreatePostForCurrentBlogProps } from "../../posts/service/interfaces";
 import { setDefaultSortAndPaginationIfNotExist } from "../repositories/helpers";
 import { blogsQueryRepository } from "../repositories/blog-query-repository";
 import { postQueryRepository } from "../../posts/repositories/post-query-repository";

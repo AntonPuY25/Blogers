@@ -1,5 +1,5 @@
 import { blogsCollection, postsCollection } from "../../db/db";
-import { GetAllPostsForCurrentBlogProps } from "../application/interfaces";
+import { GetAllPostsForCurrentBlogProps } from "../service/interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 import { getPagesCount, getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
 

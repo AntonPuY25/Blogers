@@ -18,7 +18,7 @@ import {
   shortDescriptionPostMaxLengthValidate,
   titlePostMaxLengthValidate,
 } from "../../core/middlewares/validate-posts-middleware";
-import { postService } from "../application/post-service";
+import { postService } from "../service/post-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
 import { SortFields } from "../../blogs/routers/sort-fields";
 import {
