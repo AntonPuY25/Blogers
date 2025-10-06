@@ -77,8 +77,6 @@ usersRouter.post(
 usersRouter.delete(
   "/:userId",
   superAdminGuardMiddleware,
-  userIdLengthValidate,
-  getUserValidationErrorsMiddieWare,
   async (
     req: RequestWithParams<RequestParamsForDeleteUserProps>,
     res: Response,
