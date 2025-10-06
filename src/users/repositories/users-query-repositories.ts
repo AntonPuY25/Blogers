@@ -32,6 +32,16 @@ export const usersQueryRepositories = {
     }
   },
 
+  getCurrentUserByLoginOrEmail: async (loginOrEmail: string) => {
+    try {
+      return await usersCollection.findOne({
+        $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
   getAllUsers: async ({
     pageNumber,
     pageSize,

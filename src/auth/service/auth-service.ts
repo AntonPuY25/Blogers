@@ -1,17 +1,19 @@
 import { UserLoginRequestProps } from "../routers/interface";
 import bcrypt from "bcrypt";
-import { SALT_ROUNDS } from "../../users/service/constants";
-import { authRepository } from "../repositories/auth-repository";
+import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
 
 export const authService = {
   auth: async ({ password, loginOrEmail }: UserLoginRequestProps) => {
-    const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+    const currentUserByLoginOrEmail =
+      await usersQueryRepositories.getCurrentUserByLoginOrEmail(loginOrEmail);
+
+    if (!currentUserByLoginOrEmail) {
+      return false;
+    }
+
+    const salt = currentUserByLoginOrEmail.userSalt;
     const hash = bcrypt.hashSync(password, salt);
 
-    return await authRepository.auth({
-      loginOrEmail,
-      hash,
-      salt,
-    });
+    return hash === currentUserByLoginOrEmail.userHash;
   },
 };
