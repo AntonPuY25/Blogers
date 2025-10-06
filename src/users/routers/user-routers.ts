@@ -1,5 +1,8 @@
 import { Response, Router } from "express";
-import { RequestWithBody } from "../../core/types/basic-url-types";
+import {
+  RequestWithBody,
+  RequestWithQuery,
+} from "../../core/types/basic-url-types";
 import { UsersDataForCreateRequest } from "./types";
 import {
   emailUserMaxAndMinLengthValidate,
@@ -9,11 +12,40 @@ import {
 } from "../../core/middlewares/validate-users-middleware";
 import { usersService } from "../service/user-service";
 import { usersQueryRepositories } from "../repositories/users-query-repositories";
+import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
+import { SortFieldsForUsers } from "../../blogs/routers/sort-fields";
+import {
+  GetAppPostsPaginationWithSortWithSearchQuery,
+  GetUsersPaginationWithSortWithSearchQuery,
+} from "../../core/types/pagintaion-types";
+import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
+import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
 
 export const usersRouter = Router();
 
+usersRouter.get(
+  "/",
+  superAdminGuardMiddleware,
+  paginationAndSortingValidation(SortFieldsForUsers),
+  getUserValidationErrorsMiddieWare,
+  async (
+    req: RequestWithQuery<Partial<GetUsersPaginationWithSortWithSearchQuery>>,
+    res: Response,
+  ) => {
+    const queryParamsFirUsers = setDefaultSortAndPaginationIfNotExist(
+      req.query,
+    ) as GetAppPostsPaginationWithSortWithSearchQuery;
+
+    const allUsers =
+      await usersQueryRepositories.getAllUsers(queryParamsFirUsers);
+
+    res.status(200).send(allUsers);
+  },
+);
+
 usersRouter.post(
   "/",
+  superAdminGuardMiddleware,
   loginUserMaxAndMinLengthValidate,
   passwordUserMaxAndMinLengthValidate,
   emailUserMaxAndMinLengthValidate,

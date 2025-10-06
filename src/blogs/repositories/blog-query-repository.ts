@@ -3,12 +3,12 @@ import { blogsCollection } from "../../db/db";
 import { GetAllBlogsTypeForRepositories } from "./types";
 import {
   getPagesCount,
-  getSkipPagesAndLimitForBlogAndSortPagination,
+  getSkipPagesAndLimit,
 } from "./helpers";
 
 export const blogsQueryRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
-    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
+    const { skip, limit } = getSkipPagesAndLimit({
       pageNumber: params.pageNumber,
       pageSize: params.pageSize,
     });

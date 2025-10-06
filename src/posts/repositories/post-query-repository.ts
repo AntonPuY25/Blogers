@@ -1,11 +1,11 @@
 import { blogsCollection, postsCollection } from "../../db/db";
 import { GetAllPostsForCurrentBlogProps } from "../service/interfaces";
 import { GetAppPostsPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import { getPagesCount, getSkipPagesAndLimitForBlogAndSortPagination } from "../../blogs/repositories/helpers";
+import { getPagesCount, getSkipPagesAndLimit } from "../../blogs/repositories/helpers";
 
 export const postQueryRepository = {
   getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
-    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
+    const { skip, limit } = getSkipPagesAndLimit({
       pageNumber: props.pageNumber,
       pageSize: props.pageSize,
     });
@@ -71,7 +71,7 @@ export const postQueryRepository = {
     sortBy,
     sortDirection,
   }: GetAllPostsForCurrentBlogProps) => {
-    const { skip, limit } = getSkipPagesAndLimitForBlogAndSortPagination({
+    const { skip, limit } = getSkipPagesAndLimit({
       pageNumber,
       pageSize,
     });

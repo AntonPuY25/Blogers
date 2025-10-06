@@ -5,7 +5,7 @@ import {
 import { PaginationAndSorting } from "../../core/types/pagintaion-types";
 import { paginationAndSortingDefault } from "../../core/middlewares/sort-and-pagination-middleware";
 
-export const getSkipPagesAndLimitForBlogAndSortPagination = ({
+export const getSkipPagesAndLimit = ({
   pageSize,
   pageNumber,
 }: GetSkipPagesAndLimitForBlogPaginationProps) => {

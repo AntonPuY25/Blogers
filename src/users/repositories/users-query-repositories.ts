@@ -5,6 +5,8 @@ import {
 import { usersCollection } from "../../db/db";
 import { WithId } from "mongodb";
 import { getUserMappedDataForCreate } from "./users-mappers";
+import { GetUsersPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
+import { getSkipPagesAndLimit } from "../../blogs/repositories/helpers";
 
 export const usersQueryRepositories = {
   getCurrentUserByObjectId: async ({ _id }: GetCurrentUserByObjectIdProps) => {
@@ -22,5 +24,39 @@ export const usersQueryRepositories = {
     } catch (e) {
       console.log(e);
     }
+  },
+
+  getAllUsers: async ({
+    pageNumber,
+    pageSize,
+    sortDirection,
+    sortBy,
+    searchLoginTerm,
+    searchEmailTerm,
+  }: GetUsersPaginationWithSortWithSearchQuery) => {
+    const { skip, limit } = getSkipPagesAndLimit({
+      pageNumber,
+      pageSize,
+    });
+
+    const searchQuery = searchLoginTerm || searchEmailTerm
+      ? {
+        $or: [
+          ...(searchLoginTerm ? [{ login: { $regex: searchLoginTerm, $options: "i" } }] : []),
+          ...(searchEmailTerm ? [{ email: { $regex: searchEmailTerm, $options: "i" } }] : [])
+        ]
+      }
+      : {};
+
+    const sortParams = { [sortBy]: sortDirection };
+
+    const allUsers = await usersCollection
+      .find(searchQuery)
+      .sort(sortParams)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    return getUserMappedDataForCreate(allUsers);
   },
 };

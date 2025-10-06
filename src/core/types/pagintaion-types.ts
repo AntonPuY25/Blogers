@@ -18,3 +18,9 @@ export interface GetAppPostsPaginationWithSortWithSearchQuery
     GetAppBlogsPaginationWithSortWithSearchQuery,
     "searchNameTerm"
   > {}
+
+export interface GetUsersPaginationWithSortWithSearchQuery
+  extends PaginationAndSorting<SortFields> {
+  searchEmailTerm?: string;
+  searchLoginTerm?: string;
+}
