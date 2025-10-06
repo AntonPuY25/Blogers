@@ -4,9 +4,12 @@ import {
 } from "./interface";
 import { usersCollection } from "../../db/db";
 import { WithId } from "mongodb";
-import { getUserMappedDataForCreate, getUserMappedDataForGe } from "./users-mappers";
+import { getUserMappedDataForCreate } from "./users-mappers";
 import { GetUsersPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import { getSkipPagesAndLimit } from "../../blogs/repositories/helpers";
+import {
+  getPagesCount,
+  getSkipPagesAndLimit,
+} from "../../blogs/repositories/helpers";
 
 export const usersQueryRepositories = {
   getCurrentUserByObjectId: async ({ _id }: GetCurrentUserByObjectIdProps) => {
@@ -39,24 +42,44 @@ export const usersQueryRepositories = {
       pageSize,
     });
 
-    const searchQuery = searchLoginTerm || searchEmailTerm
-      ? {
-        $or: [
-          ...(searchLoginTerm ? [{ login: { $regex: searchLoginTerm, $options: "i" } }] : []),
-          ...(searchEmailTerm ? [{ email: { $regex: searchEmailTerm, $options: "i" } }] : [])
-        ]
-      }
-      : {};
+    const searchQuery =
+      searchLoginTerm || searchEmailTerm
+        ? {
+            $or: [
+              ...(searchLoginTerm
+                ? [{ login: { $regex: searchLoginTerm, $options: "i" } }]
+                : []),
+              ...(searchEmailTerm
+                ? [{ email: { $regex: searchEmailTerm, $options: "i" } }]
+                : []),
+            ],
+          }
+        : {};
 
     const sortParams = { [sortBy]: sortDirection };
 
-    const allUsers = await usersCollection
-      .find(searchQuery)
-      .sort(sortParams)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    const [items, totalCount] = await Promise.all([
+      usersCollection
+        .find(searchQuery)
+        .sort(sortParams)
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
 
-    return getUserMappedDataForGe(allUsers);
+      usersCollection.countDocuments(searchQuery), // Подсчет общего количества
+    ]);
+
+    const pagesCount = getPagesCount({
+      totalCount,
+      pageSize: pageSize,
+    });
+
+    return {
+      pagesCount,
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount,
+      items,
+    };
   },
 };
