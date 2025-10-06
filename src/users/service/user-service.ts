@@ -2,6 +2,7 @@ import { UsersDataForCreateRequest } from "../routers/types";
 import { getHashAndSaltForUserPassword } from "./helpers";
 import { CreatedUserDataForBD } from "../repositories/interface";
 import { userRepository } from "../repositories/user-repository";
+import { ObjectId } from "mongodb";
 
 export const usersService = {
   createUser: async ({ password, login, email }: UsersDataForCreateRequest) => {
@@ -19,4 +20,10 @@ export const usersService = {
 
    return await userRepository.createUser(createdUserDataForBd);
   },
+
+  deleteUserById: async (_id: ObjectId) => {
+
+    return await userRepository.deleteUserById(_id);
+
+  }
 };

@@ -1,9 +1,13 @@
 import { Response, Router } from "express";
 import {
   RequestWithBody,
+  RequestWithParams,
   RequestWithQuery,
 } from "../../core/types/basic-url-types";
-import { UsersDataForCreateRequest } from "./types";
+import {
+  RequestParamsForDeleteUserProps,
+  UsersDataForCreateRequest,
+} from "./types";
 import {
   emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
@@ -20,6 +24,7 @@ import {
 } from "../../core/types/pagintaion-types";
 import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
+import { ObjectId } from "mongodb";
 
 export const usersRouter = Router();
 
@@ -66,5 +71,26 @@ usersRouter.post(
     }
 
     res.status(201).send(createdUser);
+  },
+);
+
+usersRouter.delete(
+  "/:userId",
+  superAdminGuardMiddleware,
+  async (
+    req: RequestWithParams<RequestParamsForDeleteUserProps>,
+    res: Response,
+  ) => {
+    const userIdFromParams = req.params.userId;
+
+    const _id = new ObjectId(userIdFromParams);
+
+    const deletedUserCount = await usersService.deleteUserById(_id);
+
+    if (deletedUserCount && deletedUserCount > 0) {
+      return res.sendStatus(204);
+    } else {
+      return res.sendStatus(404);
+    }
   },
 );

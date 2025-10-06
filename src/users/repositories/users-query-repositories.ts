@@ -4,7 +4,7 @@ import {
 } from "./interface";
 import { usersCollection } from "../../db/db";
 import { WithId } from "mongodb";
-import { getUserMappedDataForCreate } from "./users-mappers";
+import { getUserMappedDataForCreate, getUserMappedDataForGe } from "./users-mappers";
 import { GetUsersPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 import { getSkipPagesAndLimit } from "../../blogs/repositories/helpers";
 
@@ -57,6 +57,6 @@ export const usersQueryRepositories = {
       .limit(limit)
       .toArray();
 
-    return getUserMappedDataForCreate(allUsers);
+    return getUserMappedDataForGe(allUsers);
   },
 };

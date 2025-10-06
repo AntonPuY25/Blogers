@@ -3,3 +3,7 @@ export interface UsersDataForCreateRequest  {
   password: string;
   email: string;
 }
+
+export interface RequestParamsForDeleteUserProps {
+  userId?: string;
+}
