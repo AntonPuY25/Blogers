@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { body, validationResult, param } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 
 export const getUserValidationErrorsMiddieWare = (
   req: Request,
@@ -35,6 +35,16 @@ export const passwordUserMaxAndMinLengthValidate = body("password")
   .withMessage({
     message: "Password field is Required and  must be maximum 15 symbols",
     field: "password",
+  });
+
+export const loginOrEmailUserMaxAndMinLengthValidate = body(
+  "loginOrEmail",
+)
+  .trim()
+  .isLength({ min: 3, max: 15 })
+  .withMessage({
+    message: "Login Or Email field is Required and  must be maximum 15 symbols",
+    field: "loginOrEmail",
   });
 
 export const emailUserMaxAndMinLengthValidate = body("email")

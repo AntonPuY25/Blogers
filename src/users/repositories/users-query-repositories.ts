@@ -4,7 +4,10 @@ import {
 } from "./interface";
 import { usersCollection } from "../../db/db";
 import { WithId } from "mongodb";
-import { getUserMappedDataForCreate } from "./users-mappers";
+import {
+  getUserMappedDataForCreate,
+  getUserMappedDataForGe,
+} from "./users-mappers";
 import { GetUsersPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
 import {
   getPagesCount,
@@ -79,7 +82,7 @@ export const usersQueryRepositories = {
       page: Number(pageNumber),
       pageSize: Number(pageSize),
       totalCount,
-      items,
+      items: getUserMappedDataForGe(items),
     };
   },
 };
