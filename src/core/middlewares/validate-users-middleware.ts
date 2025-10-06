@@ -18,7 +18,10 @@ export const getUserValidationErrorsMiddieWare = (
     return msg;
   });
 
-  res.status(400).send({ errorsMessages: result });
+  const firstError = errors.array()[0];
+  const statusCode = (firstError.msg as any)?.code || 400;
+
+  res.status(statusCode || 400).send({ errorsMessages: result });
 };
 
 export const loginUserMaxAndMinLengthValidate = body("login")
@@ -37,9 +40,7 @@ export const passwordUserMaxAndMinLengthValidate = body("password")
     field: "password",
   });
 
-export const loginOrEmailUserMaxAndMinLengthValidate = body(
-  "loginOrEmail",
-)
+export const loginOrEmailUserMaxAndMinLengthValidate = body("loginOrEmail")
   .trim()
   .isLength({ min: 3, max: 15 })
   .withMessage({
@@ -61,4 +62,5 @@ export const userIdLengthValidate = param("userId")
   .withMessage({
     message: "User ID must be exactly 24 characters",
     field: "id",
+    code: 404,
   });
