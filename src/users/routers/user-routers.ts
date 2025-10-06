@@ -12,7 +12,7 @@ import {
   emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   loginUserMaxAndMinLengthValidate,
-  passwordUserMaxAndMinLengthValidate,
+  passwordUserMaxAndMinLengthValidate, userIdLengthValidate
 } from "../../core/middlewares/validate-users-middleware";
 import { usersService } from "../service/user-service";
 import { usersQueryRepositories } from "../repositories/users-query-repositories";
@@ -77,6 +77,8 @@ usersRouter.post(
 usersRouter.delete(
   "/:userId",
   superAdminGuardMiddleware,
+  userIdLengthValidate,
+  getUserValidationErrorsMiddieWare,
   async (
     req: RequestWithParams<RequestParamsForDeleteUserProps>,
     res: Response,
