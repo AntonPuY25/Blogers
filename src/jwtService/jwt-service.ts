@@ -8,4 +8,13 @@ export const jwtService = {
     };
     return jwt.sign({ userId }, SETTINGS.AC_SECRET, options);
   },
+
+  async verifyToken(token: string): Promise<{ userId: string } | null> {
+    try {
+      return jwt.verify(token, SETTINGS.AC_SECRET) as { userId: string };
+    } catch (error) {
+      console.error("Token verify some error");
+      return null;
+    }
+  },
 };

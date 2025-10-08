@@ -7,6 +7,9 @@ import {
   loginOrEmailUserMaxAndMinLengthValidate,
   passwordUserMaxAndMinLengthValidate,
 } from "../../core/middlewares/validate-users-middleware";
+import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
+import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
+import { ObjectId } from "mongodb";
 
 export const authRouter = Router();
 
@@ -16,12 +19,26 @@ authRouter.post(
   loginOrEmailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   async (req: RequestWithBody<UserLoginRequestProps>, res: Response) => {
-    const isLoggedUser = await authService.auth(req.body);
+    const jwtToken = await authService.auth(req.body);
 
-    if (isLoggedUser) {
-      return res.sendStatus(204);
+    if (!jwtToken) {
+      return res.sendStatus(401);
     }
 
-    return res.sendStatus(401);
+    res.status(200).send({
+      accessToken: jwtToken,
+    });
+  },
+);
+
+authRouter.get(
+  "/me",
+  accessTokenMiddlewareGuard,
+  async (req: RequestWithBody<UserLoginRequestProps>, res: Response) => {
+    const currentUser = await usersQueryRepositories.getCurrentUserByObjectId({
+      _id: new ObjectId(req.user.userId),
+    });
+
+    res.sendStatus(201);
   },
 );
