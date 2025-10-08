@@ -1,3 +1,5 @@
+import { CommentForPostFromBd } from "../../posts/service/interfaces";
+
 export interface BlogType {
   id: string;
   name: string;
@@ -17,6 +19,7 @@ export interface PostType {
   blogName: string;
   blogId: string;
   createdAt: string;
+  comments?: CommentForPostFromBd[];
 }
 
 export interface UpdatePostType extends Omit<PostType, "id" | "blogName"> {}

@@ -13,6 +13,7 @@ import {
 import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import {
   blogIdPostRequiredValidate,
+  commentPostRequiredValidate,
   contentPostMaxLengthValidate,
   getPostsValidationErrorsMiddieWare,
   shortDescriptionPostMaxLengthValidate,
@@ -27,6 +28,10 @@ import {
 } from "../../core/types/pagintaion-types";
 import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
 import { postQueryRepository } from "../repositories/post-query-repository";
+import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
+import { CreateCommentForPostProps } from "./interface";
+import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
+import { ObjectId } from "mongodb";
 
 export const postRouter = Router();
 
@@ -156,5 +161,42 @@ postRouter.delete(
     }
 
     res.sendStatus(204);
+  },
+);
+
+postRouter.post(
+  "/:postId/comments",
+  commentPostRequiredValidate,
+  accessTokenMiddlewareGuard,
+  getPostsValidationErrorsMiddieWare,
+  async (
+    req: RequestWithBodyAndParams<GetCurrentPostId, CreateCommentForPostProps>,
+    res: Response,
+  ) => {
+    const currentPostId = req.params.postId || "";
+    const currentUserId = req.user.userId;
+
+    const currentUser = await usersQueryRepositories.getCurrentUserByObjectId({
+      _id: new ObjectId(currentUserId),
+    });
+
+    const { content } = req.body;
+
+    if (!currentPostId || !currentUser) {
+      return res.sendStatus(404);
+    }
+
+    const createdComment = await postService.createCommentForPost({
+      content,
+      userId: currentUser.id.toString(),
+      userLogin: currentUser.login,
+      postId: currentPostId,
+    });
+
+    if (!createdComment) {
+      return res.sendStatus(404);
+    }
+
+    res.status(201).send(createdComment);
   },
 );
