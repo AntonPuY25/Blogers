@@ -3,11 +3,6 @@ import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { postQueryRepository } from "../repositories/post-query-repository";
-import {
-  CommentForPostFromBd,
-  CreateCommentForPostFromServiceProps,
-} from "./interfaces";
-import { ObjectId } from "mongodb";
 
 export const postService = {
   createNewPost: async ({
@@ -56,29 +51,5 @@ export const postService = {
 
   deletePost: async (postId: string) => {
     return await postRepository.deletePost(postId);
-  },
-
-  createCommentForPost: async ({
-    content,
-    userId,
-    userLogin,
-    postId,
-  }: CreateCommentForPostFromServiceProps) => {
-    const newCreatedCommentForPost: CommentForPostFromBd = {
-      id: new ObjectId().toString(),
-      content,
-      commentatorInfo: {
-        userLogin,
-        userId,
-      },
-      createdAt: new Date().toISOString(),
-    };
-
-    const isCreatedComment = await postRepository.createCommentForPost({
-      ...newCreatedCommentForPost,
-      postId,
-    });
-
-    return isCreatedComment ? newCreatedCommentForPost : false;
   },
 };

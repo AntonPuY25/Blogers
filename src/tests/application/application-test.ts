@@ -1,4 +1,4 @@
-import { blogsCollection, postsCollection, usersCollection } from "../../db/db";
+import { blogsCollection, commentsCollection, postsCollection, usersCollection } from "../../db/db";
 
 export const testService = {
   clearAll: async () => {
@@ -7,5 +7,7 @@ export const testService = {
     await postsCollection.deleteMany({})
 
     await usersCollection.deleteMany({})
+
+    await commentsCollection.deleteMany({})
   }
 }

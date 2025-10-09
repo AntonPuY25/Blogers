@@ -10,3 +10,8 @@ export enum SortFieldsForUsers {
   Email = "email",
   Login = "login",
 }
+
+export enum SortFieldsForComments {
+  Content = "content",
+  CreatedAt = "createdAt",
+}

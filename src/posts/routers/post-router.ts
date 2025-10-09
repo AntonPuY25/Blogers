@@ -3,6 +3,7 @@ import {
   RequestWithBody,
   RequestWithBodyAndParams,
   RequestWithParams,
+  RequestWithParamsAndQuery,
   RequestWithQuery,
 } from "../../core/types/basic-url-types";
 import {
@@ -21,17 +22,26 @@ import {
 } from "../../core/middlewares/validate-posts-middleware";
 import { postService } from "../service/post-service";
 import { paginationAndSortingValidation } from "../../core/middlewares/sort-and-pagination-middleware";
-import { SortFields } from "../../blogs/routers/sort-fields";
+import {
+  SortFields,
+  SortFieldsForComments,
+} from "../../blogs/routers/sort-fields";
 import {
   GetAppBlogsPaginationWithSortWithSearchQuery,
   GetAppPostsPaginationWithSortWithSearchQuery,
+  PaginationAndSorting,
 } from "../../core/types/pagintaion-types";
 import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
 import { postQueryRepository } from "../repositories/post-query-repository";
 import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
-import { CreateCommentForPostProps } from "./interface";
+import {
+  CreateCommentForPostProps,
+  GetPaginationAndSortForPostsAndComments,
+} from "./interface";
 import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
 import { ObjectId } from "mongodb";
+import { commentsService } from "../../comments/commentsService/comments-service";
+import { commentsQueryRepositories } from "../../comments/commentsRepository/comments-query-repository";
 
 export const postRouter = Router();
 
@@ -180,23 +190,58 @@ postRouter.post(
       _id: new ObjectId(currentUserId),
     });
 
+    const currentPost = await postQueryRepository.getPostById(currentPostId);
+
     const { content } = req.body;
 
-    if (!currentPostId || !currentUser) {
+    if (!currentPost || !currentUser) {
       return res.sendStatus(404);
     }
 
-    const createdComment = await postService.createCommentForPost({
+    const createdCommentId = await commentsService.createCommentForPost({
       content,
       userId: currentUser.id.toString(),
       userLogin: currentUser.login,
       postId: currentPostId,
     });
 
-    if (!createdComment) {
+    const currentComment =
+     await commentsQueryRepositories.getCurrentCommentById(createdCommentId);
+
+    if (!currentComment) {
       return res.sendStatus(404);
     }
 
-    res.status(201).send(createdComment);
+    res.status(201).send(currentComment);
+  },
+);
+
+postRouter.get(
+  "/:postId/comments",
+  paginationAndSortingValidation(SortFields),
+  async (
+    req: RequestWithParamsAndQuery<
+      GetCurrentPostId,
+      Partial<GetPaginationAndSortForPostsAndComments>
+    >,
+    res: Response,
+  ) => {
+    const currentPostId = req.params.postId || "";
+
+    const queryParamsForGetBlogs = setDefaultSortAndPaginationIfNotExist(
+      req.query,
+    ) as PaginationAndSorting<SortFieldsForComments>;
+
+    const allCommentsFromCurrentPost =
+      postQueryRepository.getAllCommentsForCurrentPost({
+        postId: currentPostId,
+        ...queryParamsForGetBlogs,
+      });
+
+    if (!allCommentsFromCurrentPost) {
+      return res.sendStatus(404);
+    }
+
+    res.status(201);
   },
 );

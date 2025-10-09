@@ -1,5 +1,8 @@
-import { CommentForPostFromBd, CommentForPostFromBdCommentatorInfo } from "../service/interfaces";
+import { PaginationAndSorting } from "../../core/types/pagintaion-types";
+import { SortFieldsForComments } from "../../blogs/routers/sort-fields";
 
-export interface CreateCommentForPostRepository extends CommentForPostFromBd {
+
+export interface GetAllCommentsForCurrentPostProps
+  extends PaginationAndSorting<SortFieldsForComments> {
   postId: string;
 }

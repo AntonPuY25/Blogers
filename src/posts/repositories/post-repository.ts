@@ -1,7 +1,6 @@
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { postsCollection } from "../../db/db";
-import { CreateCommentForPostRepository } from "./interface";
 
 export const postRepository = {
   createNewPost: async (newPost: PostType) => {
@@ -38,16 +37,5 @@ export const postRepository = {
     const deletedPost = await postsCollection.deleteOne({ id: postId });
 
     return deletedPost.deletedCount;
-  },
-
-  createCommentForPost: async ({
-    postId,
-    ...comment
-  }: CreateCommentForPostRepository) => {
-    const updatedPost = await postsCollection.updateOne({ id: postId }, {
-      $push: { comments: comment },
-    } as any);
-
-    return updatedPost.modifiedCount;
   },
 };
