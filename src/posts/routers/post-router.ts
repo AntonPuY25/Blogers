@@ -206,7 +206,7 @@ postRouter.post(
     });
 
     const currentComment =
-     await commentsQueryRepositories.getCurrentCommentById(createdCommentId);
+      await commentsQueryRepositories.getCurrentCommentById(createdCommentId);
 
     if (!currentComment) {
       return res.sendStatus(404);
@@ -228,13 +228,19 @@ postRouter.get(
   ) => {
     const currentPostId = req.params.postId || "";
 
+    const currentPost = await postQueryRepository.getPostById(currentPostId);
+
+    if (!currentPost) {
+      return res.sendStatus(404);
+    }
+
     const queryParamsForGetBlogs = setDefaultSortAndPaginationIfNotExist(
       req.query,
     ) as PaginationAndSorting<SortFieldsForComments>;
 
     const allCommentsFromCurrentPost =
-      postQueryRepository.getAllCommentsForCurrentPost({
-        postId: currentPostId,
+      await commentsQueryRepositories.getAllCommentsForCurrentPost({
+        postId: currentPost.id,
         ...queryParamsForGetBlogs,
       });
 
@@ -242,6 +248,6 @@ postRouter.get(
       return res.sendStatus(404);
     }
 
-    res.status(201);
+    res.status(200).send(allCommentsFromCurrentPost);
   },
 );
