@@ -4,13 +4,14 @@ import { testRouter } from "./tests/routers/test-router";
 import { postRouter } from "./posts/routers/post-router";
 import {
   AUTH_PATH,
-  BLOGS_PATH,
+  BLOGS_PATH, COMMENTS_PATH,
   POSTS_PATH,
   TESTING_PATH,
   USERS_PATH
 } from "./core/paths/paths";
 import { usersRouter } from "./users/routers/user-routers";
 import { authRouter } from "./auth/routers/routers";
+import { commentsRouters } from "./comments/commentsRouters/comments-routers";
 
 export const setupApp = (app: Express) => {
   app.use(express.json()); // middleware для парсинга JSON в теле запроса
@@ -20,6 +21,7 @@ export const setupApp = (app: Express) => {
   app.use(TESTING_PATH, testRouter);
   app.use(USERS_PATH, usersRouter);
   app.use(AUTH_PATH, authRouter);
+  app.use(COMMENTS_PATH, commentsRouters);
 
   app.get("/", (req, res) => {
     res.status(200).send("Hello world!");
