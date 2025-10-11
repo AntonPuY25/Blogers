@@ -12,7 +12,8 @@ import {
   emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   loginUserMaxAndMinLengthValidate,
-  passwordUserMaxAndMinLengthValidate, userIdLengthValidate
+  passwordUserMaxAndMinLengthValidate,
+  userIdLengthValidate,
 } from "../../core/middlewares/validate-users-middleware";
 import { usersService } from "../service/user-service";
 import { usersQueryRepositories } from "../repositories/users-query-repositories";
@@ -25,6 +26,7 @@ import {
 import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import { setDefaultSortAndPaginationIfNotExist } from "../../blogs/repositories/helpers";
 import { ObjectId } from "mongodb";
+import { STATUSES_CODE } from "../../core/types/constants";
 
 export const usersRouter = Router();
 
@@ -44,7 +46,7 @@ usersRouter.get(
     const allUsers =
       await usersQueryRepositories.getAllUsers(queryParamsFirUsers);
 
-    res.status(200).send(allUsers);
+    res.status(STATUSES_CODE.Success).send(allUsers);
   },
 );
 
@@ -62,15 +64,16 @@ usersRouter.post(
       return res.sendStatus(400);
     }
 
-    const createdUser = await usersQueryRepositories.getCurrentUserByObjectId({
-      _id: createdUserObjectId,
-    });
+    const { data, status, errorMessage } =
+      await usersQueryRepositories.getCurrentUserByObjectId({
+        _id: createdUserObjectId,
+      });
 
-    if (!createdUser) {
-      return res.sendStatus(400);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.status(201).send(createdUser);
+    res.status(STATUSES_CODE.Created).send(data);
   },
 );
 
