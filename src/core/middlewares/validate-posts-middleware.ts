@@ -53,7 +53,7 @@ export const blogIdPostRequiredValidate = body("blogId")
     field: "blogId",
   });
 
-export const commentPostRequiredValidate = body("content")
+export const commentContentRequiredValidate = body("content")
   .isLength({ min: 20, max: 300 })
   .withMessage({
     message: "Content for comment field is Required",

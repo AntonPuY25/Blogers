@@ -1,10 +1,8 @@
-import { NextFunction, Response } from "express";
-import { RequestWithParams } from "../types/basic-url-types";
-import { GetCurrentCommentParams } from "../../comments/commentsRouters/interface";
+import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
 
 export const objectIdValidateMiddleware = (
-  req: RequestWithParams<GetCurrentCommentParams>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {

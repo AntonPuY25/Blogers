@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import {
   RequestWithBody,
-  RequestWithBodyAndParams,
+  RequestWithParamsAndBody,
   RequestWithParams,
   RequestWithParamsAndQuery,
   RequestWithQuery,
@@ -104,7 +104,7 @@ blogsRouter.put(
   websiteUrlBlogMaxLengthValidate,
   getBlogValidationErrorsMiddieWare,
   async (
-    req: RequestWithBodyAndParams<GetCurrentBlogType, UpdatedBlogDataType>,
+    req: RequestWithParamsAndBody<GetCurrentBlogType, UpdatedBlogDataType>,
     res: Response,
   ) => {
     const currentBlogId = req.params.blogId || "";
@@ -188,7 +188,7 @@ blogsRouter.post(
   superAdminGuardMiddleware,
   getBlogValidationErrorsMiddieWare,
   async (
-    req: RequestWithBodyAndParams<
+    req: RequestWithParamsAndBody<
       GetCurrentBlogType,
       CreatePostForCurrentBlogProps
     >,

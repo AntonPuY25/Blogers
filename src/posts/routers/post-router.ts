@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import {
   RequestWithBody,
-  RequestWithBodyAndParams,
+  RequestWithParamsAndBody,
   RequestWithParams,
   RequestWithParamsAndQuery,
   RequestWithQuery,
@@ -14,7 +14,7 @@ import {
 import { superAdminGuardMiddleware } from "../../core/middlewares/auth-middleware";
 import {
   blogIdPostRequiredValidate,
-  commentPostRequiredValidate,
+  commentContentRequiredValidate,
   contentPostMaxLengthValidate,
   getPostsValidationErrorsMiddieWare,
   shortDescriptionPostMaxLengthValidate,
@@ -117,7 +117,7 @@ postRouter.put(
   blogIdPostRequiredValidate,
   getPostsValidationErrorsMiddieWare,
   async (
-    req: RequestWithBodyAndParams<GetCurrentPostId, UpdatePostData>,
+    req: RequestWithParamsAndBody<GetCurrentPostId, UpdatePostData>,
     res: Response,
   ) => {
     const currentPostId = req.params.postId || "";
@@ -176,11 +176,11 @@ postRouter.delete(
 
 postRouter.post(
   "/:postId/comments",
-  commentPostRequiredValidate,
+  commentContentRequiredValidate,
   accessTokenMiddlewareGuard,
   getPostsValidationErrorsMiddieWare,
   async (
-    req: RequestWithBodyAndParams<GetCurrentPostId, CreateCommentForPostProps>,
+    req: RequestWithParamsAndBody<GetCurrentPostId, CreateCommentForPostProps>,
     res: Response,
   ) => {
     const currentPostId = req.params.postId || "";
