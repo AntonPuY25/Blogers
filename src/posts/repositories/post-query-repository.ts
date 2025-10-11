@@ -5,6 +5,10 @@ import {
   getPagesCount,
   getSkipPagesAndLimit,
 } from "../../blogs/repositories/helpers";
+import { ResultObject } from "../../core/types/result-object";
+import { BlogType } from "../../core/types/db-types";
+import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
+import { WithId } from "mongodb";
 
 export const postQueryRepository = {
   getAllPosts: async (props: GetAppPostsPaginationWithSortWithSearchQuery) => {
@@ -47,11 +51,19 @@ export const postQueryRepository = {
       { projection: { _id: 0 } },
     );
 
-    if (!currentBlog) {
-      return null;
-    } else {
-      return currentBlog;
+    if (currentBlog) {
+      return {
+        status: STATUSES_CODE.Success,
+        data: currentBlog,
+        errorMessage: undefined,
+      } as ResultObject<WithId<BlogType>>;
     }
+
+    return {
+      status: STATUSES_CODE.NotFound,
+      data: null,
+      errorMessage: ERRORS_MESSAGES.notFoundCurrentBlogById,
+    } as ResultObject;
   },
 
   getPostById: async (postId: string) => {
@@ -60,11 +72,19 @@ export const postQueryRepository = {
       { projection: { _id: 0 } },
     );
 
-    if (!currentPost) {
-      return null;
+    if (currentPost) {
+      return {
+        status: STATUSES_CODE.Success,
+        data: currentPost,
+        errorMessage: undefined,
+      } as ResultObject<WithId<BlogType>>;
     }
 
-    return currentPost;
+    return {
+      status: STATUSES_CODE.NotFound,
+      data: null,
+      errorMessage: ERRORS_MESSAGES.notFoundCurrentPostById,
+    } as ResultObject;
   },
 
   getAllPostsForCurrentBlog: async ({

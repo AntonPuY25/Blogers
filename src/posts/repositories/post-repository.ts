@@ -5,9 +5,9 @@ import { postsCollection } from "../../db/db";
 export const postRepository = {
   createNewPost: async (newPost: PostType) => {
     try {
-      await postsCollection.insertOne(newPost);
+      const { insertedId } = await postsCollection.insertOne(newPost);
 
-      return newPost;
+      return insertedId;
     } catch (error) {
       console.error(error);
     }

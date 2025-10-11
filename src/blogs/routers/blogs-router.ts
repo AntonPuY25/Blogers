@@ -1,8 +1,8 @@
 import { Response, Router } from "express";
 import {
   RequestWithBody,
-  RequestWithParamsAndBody,
   RequestWithParams,
+  RequestWithParamsAndBody,
   RequestWithParamsAndQuery,
   RequestWithQuery,
 } from "../../core/types/basic-url-types";
@@ -36,6 +36,7 @@ import { CreatePostForCurrentBlogProps } from "../../posts/service/interfaces";
 import { setDefaultSortAndPaginationIfNotExist } from "../repositories/helpers";
 import { blogsQueryRepository } from "../repositories/blog-query-repository";
 import { postQueryRepository } from "../../posts/repositories/post-query-repository";
+import { STATUSES_CODE } from "../../core/types/constants";
 
 export const blogsRouter = Router();
 
@@ -73,9 +74,15 @@ blogsRouter.post(
     req: RequestWithBody<CreateBlogTypeForRepositories>,
     res: Response,
   ) => {
-    const createBlog = await blogsService.createBlog(req.body);
+    const { status, errorMessage, data } = await blogsService.createBlog(
+      req.body,
+    );
 
-    res.status(201).send(createBlog);
+    if (!data) {
+      return res.status(status).send(errorMessage);
+    }
+
+    res.status(status).send(data);
   },
 );
 
@@ -84,15 +91,16 @@ blogsRouter.get(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId;
 
-    const currentBlog = await blogsQueryRepository.getCurrentBlog({
-      blogId: currentBlogId,
-    });
+    const { status, errorMessage, data } =
+      await blogsQueryRepository.getCurrentBlog({
+        blogId: currentBlogId,
+      });
 
-    if (!currentBlog) {
-      return res.sendStatus(404);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.status(200).send(currentBlog);
+    res.status(status).send(data);
   },
 );
 
@@ -109,16 +117,16 @@ blogsRouter.put(
   ) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsService.updateBlog({
+    const { status, errorMessage } = await blogsService.updateBlog({
       blogId: currentBlogId,
       ...req.body,
     });
 
-    if (!currentBlog) {
-      return res.sendStatus(404);
+    if (errorMessage) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.sendStatus(204);
+    res.sendStatus(status);
   },
 );
 
@@ -129,15 +137,15 @@ blogsRouter.delete(
   async (req: RequestWithParams<GetCurrentBlogType>, res: Response) => {
     const currentBlogId = req.params.blogId || "";
 
-    const currentBlog = await blogsService.deleteBlog({
+    const { status, errorMessage } = await blogsService.deleteBlog({
       blogId: currentBlogId,
     });
 
-    if (!currentBlog) {
-      return res.sendStatus(404);
+    if (errorMessage) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.sendStatus(204);
+    res.sendStatus(status);
   },
 );
 
@@ -158,25 +166,22 @@ blogsRouter.get(
       req.query,
     ) as GetAppPostsPaginationWithSortWithSearchQuery;
 
-    const currentBlog = await blogsQueryRepository.getCurrentBlog({
-      blogId: currentBlogId,
-    });
+    const { status, errorMessage, data } =
+      await blogsQueryRepository.getCurrentBlog({
+        blogId: currentBlogId,
+      });
 
-    if (!currentBlog) {
-      return res.sendStatus(404);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
     const allPostForCurrentBlog =
       await postQueryRepository.getAllPostsForCurrentBlog({
-        blogId: currentBlog.id,
+        blogId: data.id,
         ...queryParamsForGetPosts,
       });
 
-    if (!allPostForCurrentBlog) {
-      return res.sendStatus(404);
-    }
-
-    res.status(200).send(allPostForCurrentBlog);
+    res.status(STATUSES_CODE.Success).send(allPostForCurrentBlog);
   },
 );
 
@@ -196,23 +201,38 @@ blogsRouter.post(
   ) => {
     const currentBlogId = req.params.blogId as string;
 
-    const currentBlog = await blogsQueryRepository.getCurrentBlog({
-      blogId: currentBlogId,
-    });
+    const { status, errorMessage, data } =
+      await blogsQueryRepository.getCurrentBlog({
+        blogId: currentBlogId,
+      });
 
-    if (!currentBlog) {
-      return res.sendStatus(404);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
-    const createdPostForCurrentBlog = await postService.createNewPost({
-      blogId: currentBlogId,
+    const {
+      status: getPostStatus,
+      errorMessage: getPostErrorMessage,
+      data: getPostData,
+    } = await postQueryRepository.foundCurrentBlogForPost(currentBlogId);
+
+    if (!getPostData) {
+      return res.status(getPostStatus).send(getPostErrorMessage);
+    }
+
+    const {
+      status: postStatus,
+      data: postData,
+      errorMessage: postErrorMessage,
+    } = await postService.createNewPost({
+      blogId: data.id,
       ...req.body,
     });
 
-    if (!createdPostForCurrentBlog) {
-      return res.sendStatus(404);
+    if (!postData) {
+      return res.status(postStatus).send(postErrorMessage);
     }
 
-    res.status(201).send(createdPostForCurrentBlog);
+    res.status(postStatus).send(postData);
   },
 );

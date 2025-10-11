@@ -5,6 +5,8 @@ import {
   UpdateBlogType,
 } from "../../core/types/repositories-types";
 import { CreateBlogTypeForService } from "./types";
+import { ResultObject } from "../../core/types/result-object";
+import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 
 export const blogsService = {
   createBlog: async ({
@@ -21,15 +23,22 @@ export const blogsService = {
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      const createdBlog = await blogsRepository.createBlog(newBlog);
+    const createdBlogId = await blogsRepository.createBlog(newBlog);
 
-      const { _id, ...blogWithoutMongoId } = createdBlog as any;
-
-      return blogWithoutMongoId;
-    } catch (error) {
-      console.warn(error);
+    if (!createdBlogId) {
+      return {
+        errorMessage: ERRORS_MESSAGES.createdBlogErrorFormMongo,
+        status: STATUSES_CODE.BadRequest,
+        data: null,
+        extensions: [],
+      } as ResultObject;
     }
+
+    return {
+      status: STATUSES_CODE.Created,
+      data: newBlog,
+      extensions: [],
+    } as ResultObject<BlogType>;
   },
 
   updateBlog: async ({
@@ -38,15 +47,43 @@ export const blogsService = {
     description,
     blogId,
   }: UpdateBlogType) => {
-    return await blogsRepository.updateBlog({
+    const updatedBlogCount = await blogsRepository.updateBlog({
       blogId,
       name,
       description,
       websiteUrl,
     });
+
+    if (!updatedBlogCount) {
+      return {
+        status: STATUSES_CODE.NotFound,
+        data: null,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentBlogById,
+      } as ResultObject;
+    }
+
+    return {
+      status: STATUSES_CODE.NoContent,
+      data: null,
+      errorMessage: undefined,
+    } as ResultObject;
   },
 
   deleteBlog: async ({ blogId }: DeleteCurrentBlogType) => {
-    return await blogsRepository.deleteBlog({ blogId });
+    const deletedBlogId = await blogsRepository.deleteBlog({ blogId });
+
+    if (!deletedBlogId) {
+      return {
+        status: STATUSES_CODE.NotFound,
+        data: null,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentBlogById,
+      } as ResultObject;
+    }
+
+    return {
+      status: STATUSES_CODE.NoContent,
+      data: null,
+      errorMessage: undefined,
+    } as ResultObject;
   },
 };

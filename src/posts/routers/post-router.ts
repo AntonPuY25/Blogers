@@ -1,8 +1,8 @@
 import { Response, Router } from "express";
 import {
   RequestWithBody,
-  RequestWithParamsAndBody,
   RequestWithParams,
+  RequestWithParamsAndBody,
   RequestWithParamsAndQuery,
   RequestWithQuery,
 } from "../../core/types/basic-url-types";
@@ -42,6 +42,7 @@ import { usersQueryRepositories } from "../../users/repositories/users-query-rep
 import { ObjectId } from "mongodb";
 import { commentsService } from "../../comments/commentsService/comments-service";
 import { commentsQueryRepositories } from "../../comments/commentsRepository/comments-query-repository";
+import { STATUSES_CODE } from "../../core/types/constants";
 
 export const postRouter = Router();
 
@@ -63,7 +64,7 @@ postRouter.get(
       queryParamsForGetBlogs,
     );
 
-    res.status(200).send(allPosts);
+    res.status(STATUSES_CODE.Success).send(allPosts);
   },
 );
 
@@ -76,20 +77,22 @@ postRouter.post(
   blogIdPostRequiredValidate,
   getPostsValidationErrorsMiddieWare,
   async (req: RequestWithBody<CreatePostRequest>, res: Response) => {
-    const newPost = await postService.createNewPost({ ...req.body });
+    const { status, data, errorMessage } = await postService.createNewPost({
+      ...req.body,
+    });
 
-    if (!newPost) {
-      return res.status(400).send({
+    if (!data) {
+      return res.status(status).send({
         errorsMessages: [
           {
-            message: "Current blog is not found",
+            message: errorMessage,
             field: "blogId",
           },
         ],
       });
     }
 
-    res.status(201).send(newPost);
+    res.status(status).send(data);
   },
 );
 
@@ -98,13 +101,14 @@ postRouter.get(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const currentPost = await postQueryRepository.getPostById(currentPostId);
+    const { status, errorMessage, data } =
+      await postQueryRepository.getPostById(currentPostId);
 
-    if (!currentPost) {
-      return res.sendStatus(404);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.status(200).send(currentPost);
+    res.status(status).send(data);
   },
 );
 
@@ -123,38 +127,43 @@ postRouter.put(
     const currentPostId = req.params.postId || "";
     const { content, shortDescription, title, blogId } = req.body;
 
-    const currentBlog =
+    const { status, errorMessage, data } =
       await postQueryRepository.foundCurrentBlogForPost(blogId);
 
-    if (!currentBlog) {
-      return res.status(400).send({
+    if (!data) {
+      return res.status(status).send({
         errorsMessages: [
           {
-            message: "Current blog is not found",
+            message: errorMessage,
             field: "blogId",
           },
         ],
       });
     }
 
-    const currentPost = await postQueryRepository.getPostById(currentPostId);
+    const {
+      status: getPostStatus,
+      data: getPostData,
+      errorMessage: getPostErrorMessage,
+    } = await postQueryRepository.getPostById(currentPostId);
 
-    if (!currentPost) {
-      return res.sendStatus(404);
+    if (!getPostData) {
+      return res.status(getPostStatus).send(getPostErrorMessage);
     }
 
-    const updatedPost = await postService.updatedPost({
-      postId: currentPost.id,
-      title,
-      shortDescription,
-      content,
-    });
+    const { status: updatedPostStatus, errorMessage: updatedPostErrorMessage } =
+      await postService.updatedPost({
+        postId: getPostData.id,
+        title,
+        shortDescription,
+        content,
+      });
 
-    if (!updatedPost) {
-      return res.sendStatus(404);
+    if (updatedPostErrorMessage) {
+      return res.status(updatedPostStatus).send(updatedPostErrorMessage);
     }
 
-    res.sendStatus(204);
+    res.sendStatus(updatedPostStatus);
   },
 );
 
@@ -164,13 +173,14 @@ postRouter.delete(
   async (req: RequestWithParams<GetCurrentPostId>, res: Response) => {
     const currentPostId = req.params.postId || "";
 
-    const isDeletedPost = await postService.deletePost(currentPostId);
+    const { status, errorMessage } =
+      await postService.deletePost(currentPostId);
 
-    if (!isDeletedPost) {
-      return res.sendStatus(404);
+    if (errorMessage) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.sendStatus(204);
+    res.sendStatus(status);
   },
 );
 
@@ -186,33 +196,53 @@ postRouter.post(
     const currentPostId = req.params.postId || "";
     const currentUserId = req.user.userId;
 
-    const currentUser = await usersQueryRepositories.getCurrentUserByObjectId({
+    const { content } = req.body;
+
+    const {
+      status: userStatus,
+      data: userData,
+      errorMessage: userErrorMessage,
+    } = await usersQueryRepositories.getCurrentUserByObjectId({
       _id: new ObjectId(currentUserId),
     });
 
-    const currentPost = await postQueryRepository.getPostById(currentPostId);
-
-    const { content } = req.body;
-
-    if (!currentPost || !currentUser) {
-      return res.sendStatus(404);
+    if (!userData) {
+      return res.status(userStatus).send(userErrorMessage);
     }
 
-    const createdCommentId = await commentsService.createCommentForPost({
-      content,
-      userId: currentUser.id.toString(),
-      userLogin: currentUser.login,
-      postId: currentPostId,
-    });
+    const {
+      status: postStatus,
+      errorMessage: postErrorMessage,
+      data: postData,
+    } = await postQueryRepository.getPostById(currentPostId);
 
-    const currentComment =
-      await commentsQueryRepositories.getCurrentCommentById(createdCommentId);
-
-    if (!currentComment) {
-      return res.sendStatus(404);
+    if (!postData) {
+      return res.status(postStatus).send(postErrorMessage);
     }
 
-    res.status(201).send(currentComment);
+    const { status, errorMessage, data } =
+      await commentsService.createCommentForPost({
+        content,
+        userId: userData._id.toString(),
+        userLogin: userData.login,
+        postId: currentPostId,
+      });
+
+    if (!data) {
+      return res.status(status).send(errorMessage);
+    }
+
+    const {
+      status: currentCommentStatus,
+      errorMessage: currentCommentErrorMessage,
+      data: currentCommentData,
+    } = await commentsQueryRepositories.getCurrentCommentById(data._id);
+
+    if (!currentCommentData) {
+      return res.status(currentCommentStatus).send(currentCommentErrorMessage);
+    }
+
+    res.status(status).send(currentCommentData);
   },
 );
 
@@ -228,10 +258,14 @@ postRouter.get(
   ) => {
     const currentPostId = req.params.postId || "";
 
-    const currentPost = await postQueryRepository.getPostById(currentPostId);
+    const {
+      status: postStatus,
+      errorMessage: postErrorMessage,
+      data: postData,
+    } = await postQueryRepository.getPostById(currentPostId);
 
-    if (!currentPost) {
-      return res.sendStatus(404);
+    if (!postData) {
+      return res.status(postStatus).send(postErrorMessage);
     }
 
     const queryParamsForGetBlogs = setDefaultSortAndPaginationIfNotExist(
@@ -240,14 +274,10 @@ postRouter.get(
 
     const allCommentsFromCurrentPost =
       await commentsQueryRepositories.getAllCommentsForCurrentPost({
-        postId: currentPost.id,
+        postId: postData.id,
         ...queryParamsForGetBlogs,
       });
 
-    if (!allCommentsFromCurrentPost) {
-      return res.sendStatus(404);
-    }
-
-    res.status(200).send(allCommentsFromCurrentPost);
+    res.status(STATUSES_CODE.Success).send(allCommentsFromCurrentPost);
   },
 );

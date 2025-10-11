@@ -2,7 +2,8 @@ import { postRepository } from "../repositories/post-repository";
 import { CreatePostRequest } from "../../core/types/routers-types";
 import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
-import { postQueryRepository } from "../repositories/post-query-repository";
+import { ResultObject } from "../../core/types/result-object";
+import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 
 export const postService = {
   createNewPost: async ({
@@ -10,29 +11,33 @@ export const postService = {
     shortDescription,
     title,
     blogId,
+    blogName,
   }: CreatePostRequest) => {
-    const currentBlog =
-      await postQueryRepository.foundCurrentBlogForPost(blogId);
-
-    if (!currentBlog) {
-      return null;
-    }
-
     const newPost: PostType = {
       content,
       shortDescription,
       title,
       blogId,
       id: new Date().toISOString(),
-      blogName: currentBlog.name,
+      blogName,
       createdAt: new Date().toISOString(),
     };
 
-    const createdPost = await postRepository.createNewPost(newPost);
+    const createdPostObjectId = await postRepository.createNewPost(newPost);
 
-    const { _id, ...postWithoutMongoId } = createdPost as any;
+    if (!createdPostObjectId) {
+      return {
+        data: null,
+        errorMessage: ERRORS_MESSAGES.createdPostErrorFormMongo,
+        status: STATUSES_CODE.BadRequest,
+      } as ResultObject;
+    }
 
-    return postWithoutMongoId;
+    return {
+      data: newPost,
+      status: STATUSES_CODE.Created,
+      errorMessage: undefined,
+    } as ResultObject<PostType>;
   },
 
   updatedPost: async ({
@@ -41,15 +46,41 @@ export const postService = {
     title,
     postId,
   }: UpdatePostRepository) => {
-    return await postRepository.updatedPost({
+    const updatedPostsCount = await postRepository.updatedPost({
       postId,
       content,
       shortDescription,
       title,
     });
+
+    if (!updatedPostsCount) {
+      return {
+        data: null,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentPostById,
+        status: STATUSES_CODE.NotFound,
+      } as ResultObject;
+    }
+
+    return {
+      data: null,
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
   },
 
   deletePost: async (postId: string) => {
-    return await postRepository.deletePost(postId);
+    const deletedPostCount =  await postRepository.deletePost(postId);
+
+    if (!deletedPostCount) {
+      return {
+        data: null,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentPostById,
+        status: STATUSES_CODE.NotFound,
+      } as ResultObject;
+    }
+
+    return {
+      data: null,
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
   },
 };

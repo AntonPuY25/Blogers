@@ -1,10 +1,11 @@
 import { GetCurrentBlogType } from "../../core/types/repositories-types";
 import { blogsCollection } from "../../db/db";
 import { GetAllBlogsTypeForRepositories } from "./types";
-import {
-  getPagesCount,
-  getSkipPagesAndLimit,
-} from "./helpers";
+import { getPagesCount, getSkipPagesAndLimit } from "./helpers";
+import { ResultObject } from "../../core/types/result-object";
+import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
+import { WithId } from "mongodb";
+import { BlogType } from "../../core/types/db-types";
 
 export const blogsQueryRepository = {
   getAllBlogs: async ({ ...params }: GetAllBlogsTypeForRepositories) => {
@@ -52,9 +53,18 @@ export const blogsQueryRepository = {
     );
 
     if (!blog) {
-      return null;
+      return {
+        data: null,
+        status: STATUSES_CODE.NotFound,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentBlogById,
+        extensions: [],
+      } as ResultObject;
     }
 
-    return blog;
+    return {
+      data: blog,
+      status: STATUSES_CODE.Success,
+      extensions: [],
+    } as ResultObject<WithId<BlogType>>;
   },
 };

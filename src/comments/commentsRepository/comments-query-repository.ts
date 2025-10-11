@@ -1,23 +1,32 @@
 import { commentsCollection } from "../../db/db";
 import { ObjectId, WithId } from "mongodb";
-import { CommentForPostForBd } from "./interface";
+import { CommentForPostForBd, MappedCommentForPostForBd } from "./interface";
 import { getCurrentCommentWithoutObjectIdAndPostId } from "./comments-mappers";
 import { GetAllCommentsForCurrentPostProps } from "../../posts/repositories/interface";
 import {
   getPagesCount,
   getSkipPagesAndLimit,
 } from "../../blogs/repositories/helpers";
+import { ResultObject } from "../../core/types/result-object";
+import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 
 export const commentsQueryRepositories = {
   getCurrentCommentById: async (_id: ObjectId) => {
     const currentComment: WithId<CommentForPostForBd> | null =
       await commentsCollection.findOne({ _id });
 
-    if (!currentComment) {
-      return false;
+    if (currentComment) {
+      return {
+        data: getCurrentCommentWithoutObjectIdAndPostId(currentComment),
+        status: STATUSES_CODE.NoContent,
+      } as ResultObject<MappedCommentForPostForBd>;
     }
 
-    return getCurrentCommentWithoutObjectIdAndPostId(currentComment);
+    return {
+      status: STATUSES_CODE.NotFound,
+      errorMessage: ERRORS_MESSAGES.notFoundCurrentCommentById,
+      data: null,
+    } as ResultObject;
   },
 
   getAllCommentsForCurrentPost: async ({

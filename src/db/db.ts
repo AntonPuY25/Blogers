@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import { SETTINGS } from "../core/settings/settings";
 import { BLOGS_COLLECTION_NAME } from "./constants";
 import { CreatedUserDataForBD } from "../users/repositories/interface";
-import {CommentForPostForBd} from "../comments/commentsRepository/interface";
+import { CommentForPostForBd } from "../comments/commentsRepository/interface";
+import { BlogType } from "../core/types/db-types";
 
 dotenv.config();
 
@@ -17,10 +18,16 @@ const mongodbClient = new MongoClient(mongoUri);
 
 const dbBlogs = mongodbClient.db("Bloggers");
 
-export const blogsCollection = dbBlogs.collection(BLOGS_COLLECTION_NAME.BLOGS);
+export const blogsCollection = dbBlogs.collection<BlogType>(
+  BLOGS_COLLECTION_NAME.BLOGS,
+);
 export const postsCollection = dbBlogs.collection(BLOGS_COLLECTION_NAME.POSTS);
-export const commentsCollection = dbBlogs.collection<CommentForPostForBd>(BLOGS_COLLECTION_NAME.COMMENTS);
-export const usersCollection = dbBlogs.collection<CreatedUserDataForBD>(BLOGS_COLLECTION_NAME.USERS);
+export const commentsCollection = dbBlogs.collection<CommentForPostForBd>(
+  BLOGS_COLLECTION_NAME.COMMENTS,
+);
+export const usersCollection = dbBlogs.collection<CreatedUserDataForBD>(
+  BLOGS_COLLECTION_NAME.USERS,
+);
 
 export async function runDb() {
   try {

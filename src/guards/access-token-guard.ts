@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../jwtService/jwt-service";
 import { RequestParamsForDeleteUserProps } from "../users/routers/types";
+import { STATUSES_CODE } from "../core/types/constants";
 
 export const accessTokenMiddlewareGuard = async (
   req: Request,
@@ -8,13 +9,14 @@ export const accessTokenMiddlewareGuard = async (
   next: NextFunction,
 ) => {
   //Проверяем есть ли вообще данный заголовок где хранится наш токен
-  if (!req.headers.authorization) return res.sendStatus(401);
+  if (!req.headers.authorization)
+    return res.sendStatus(STATUSES_CODE.Unauthorized);
 
   //Разделяем наш заголовок на тип - и сам token
   const [authType, token] = req.headers.authorization.split(" ");
 
   //Тип для jwt токена должен быть Bearer
-  if (authType !== "Bearer") return res.sendStatus(401);
+  if (authType !== "Bearer") return res.sendStatus(STATUSES_CODE.Unauthorized);
 
   //Расшифровываем наш токен и получает из него наш paylod который мы вложили при его создании.
   const payload = await jwtService.verifyToken(token);
@@ -29,7 +31,7 @@ export const accessTokenMiddlewareGuard = async (
 
     return;
   }
-  res.sendStatus(401);
+  res.sendStatus(STATUSES_CODE.Unauthorized);
 
   return;
 };
