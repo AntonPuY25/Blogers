@@ -1,5 +1,5 @@
 import { commentsRepository } from "../commentsRepository/comments-repository";
-import { CreateCommentForPostFromServiceProps } from "./interface";
+import { CreateCommentForPostFromServiceProps, UpdatedCommentServiceProps } from "./interface";
 import { CommentForPostForBd } from "../commentsRepository/interface";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
@@ -39,4 +39,8 @@ export const commentsService = {
       status: STATUSES_CODE.Success,
     } as ResultObject<WithId<CommentForPostForBd>>;
   },
+
+  updateCommentForPost: async ({}:UpdatedCommentServiceProps)=>{
+
+  }
 };

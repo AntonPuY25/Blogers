@@ -16,7 +16,7 @@ import {
   blogIdPostRequiredValidate,
   commentContentRequiredValidate,
   contentPostMaxLengthValidate,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   shortDescriptionPostMaxLengthValidate,
   titlePostMaxLengthValidate,
 } from "../../core/middlewares/validate-posts-middleware";
@@ -49,7 +49,7 @@ export const postRouter = Router();
 postRouter.get(
   "/",
   paginationAndSortingValidation(SortFields),
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   async (
     req: RequestWithQuery<
       Partial<GetAppPostsPaginationWithSortWithSearchQuery>
@@ -75,7 +75,7 @@ postRouter.post(
   shortDescriptionPostMaxLengthValidate,
   contentPostMaxLengthValidate,
   blogIdPostRequiredValidate,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   async (req: RequestWithBody<CreatePostRequest>, res: Response) => {
     const { status, data, errorMessage } = await postService.createNewPost({
       ...req.body,
@@ -119,7 +119,7 @@ postRouter.put(
   shortDescriptionPostMaxLengthValidate,
   contentPostMaxLengthValidate,
   blogIdPostRequiredValidate,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   async (
     req: RequestWithParamsAndBody<GetCurrentPostId, UpdatePostData>,
     res: Response,
@@ -188,7 +188,7 @@ postRouter.post(
   "/:postId/comments",
   commentContentRequiredValidate,
   accessTokenMiddlewareGuard,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   async (
     req: RequestWithParamsAndBody<GetCurrentPostId, CreateCommentForPostProps>,
     res: Response,

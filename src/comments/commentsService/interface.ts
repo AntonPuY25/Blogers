@@ -12,3 +12,6 @@ export interface CreateCommentForPostFromServiceProps
 export interface CommentForPostFromBdCommentatorInfo
   extends Omit<CreateCommentForPostFromServiceProps, "content" | 'postId'> {}
 
+export interface UpdatedCommentServiceProps {
+  commentId: string;
+}

@@ -9,9 +9,10 @@ import { GetCurrentCommentParams, UpdateCurrentComment } from "./interface";
 import { objectIdValidateMiddleware } from "../../core/middlewares/objectid-valide-middleware";
 import {
   commentContentRequiredValidate,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
 } from "../../core/middlewares/validate-posts-middleware";
 import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
+import { commentsService } from "../commentsService/comments-service";
 
 export const commentsRouters = Router();
 
@@ -27,10 +28,10 @@ commentsRouters.get(
       );
 
     if (!data) {
-      res.status(status).send(errorMessage);
+      return res.status(status).send(errorMessage);
     }
 
-    res.status(status).send(data);
+    return res.status(status).send(data);
   },
 );
 
@@ -39,7 +40,7 @@ commentsRouters.put(
   accessTokenMiddlewareGuard,
   objectIdValidateMiddleware,
   commentContentRequiredValidate,
-  getPostsValidationErrorsMiddieWare,
+  getCommentsValidationErrorsMiddieWare,
   async (
     req: RequestWithParamsAndBody<
       GetCurrentCommentParams,
@@ -55,7 +56,11 @@ commentsRouters.put(
       );
 
     if (!data) {
-      res.status(status).send(errorMessage);
+      return res.status(status).send(errorMessage);
     }
+
+    const test = await commentsService.updateCommentForPost({
+      commentId: data.id,
+    });
   },
 );

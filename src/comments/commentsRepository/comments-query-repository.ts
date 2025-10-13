@@ -21,7 +21,7 @@ export const commentsQueryRepositories = {
     if (currentComment) {
       return {
         data: getCurrentCommentWithoutObjectIdAndPostId(currentComment),
-        status: STATUSES_CODE.NoContent,
+        status: STATUSES_CODE.Success,
       } as ResultObject<MappedCommentForPostForBd>;
     }
 

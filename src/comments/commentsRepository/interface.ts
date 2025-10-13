@@ -9,5 +9,5 @@ export interface CommentForPostForBd {
 }
 
 export interface MappedCommentForPostForBd  extends Omit<CommentForPostForBd, "postId"> {
-  id: ObjectId;
+  id: string;
 }
