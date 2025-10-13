@@ -2,6 +2,7 @@
 export const ERRORS_MESSAGES = {
   createdBlogErrorFormMongo: 'Произошла ошибка при создании блога',
   createdPostErrorFormMongo: 'Произошла ошибка при создании поста для блога',
+  createdUserErrorFormMongo: 'Произошла ошибка при создании пользователя',
   notFoundCurrentBlogById: 'Не удалось найти нужный блог',
   notFoundCurrentPostById: 'Не удалось найти нужный пост',
   notFoundCurrentUserById: 'Не удалось найти данного пользователя',

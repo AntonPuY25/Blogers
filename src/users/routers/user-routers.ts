@@ -58,22 +58,26 @@ usersRouter.post(
   emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   async (req: RequestWithBody<UsersDataForCreateRequest>, res: Response) => {
-    const createdUserObjectId = await usersService.createUser(req.body);
+    const {
+      errorMessage: createdUserErrorMessage,
+      data: createdUserData,
+      status: createdUserStatus,
+    } = await usersService.createUser(req.body);
 
-    if (!createdUserObjectId) {
-      return res.sendStatus(400);
+    if (!createdUserData) {
+      return res.status(createdUserStatus).send(createdUserErrorMessage);
     }
 
     const { data, status, errorMessage } =
       await usersQueryRepositories.getCurrentUserByObjectId({
-        _id: createdUserObjectId,
+        _id: createdUserData,
       });
 
     if (!data) {
       return res.status(status).send(errorMessage);
     }
 
-    res.status(STATUSES_CODE.Created).send(data);
+    res.status(createdUserStatus).send(data);
   },
 );
 
@@ -90,12 +94,12 @@ usersRouter.delete(
 
     const _id = new ObjectId(userIdFromParams);
 
-    const deletedUserCount = await usersService.deleteUserById(_id);
+    const { status, errorMessage } = await usersService.deleteUserById(_id);
 
-    if (deletedUserCount && deletedUserCount > 0) {
-      return res.sendStatus(204);
+    if (errorMessage) {
+      return res.status(status).send(errorMessage);
     } else {
-      return res.sendStatus(404);
+      return res.sendStatus(status);
     }
   },
 );

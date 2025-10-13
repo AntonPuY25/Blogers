@@ -19,14 +19,14 @@ authRouter.post(
   loginOrEmailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   async (req: RequestWithBody<UserLoginRequestProps>, res: Response) => {
-    const jwtToken = await authService.auth(req.body);
+    const { status, errorMessage, data } = await authService.auth(req.body);
 
-    if (!jwtToken) {
-      return res.sendStatus(401);
+    if (!data) {
+      return res.status(status).send(errorMessage);
     }
 
-    res.status(200).send({
-      accessToken: jwtToken,
+    res.status(status).send({
+      accessToken: data,
     });
   },
 );
@@ -35,10 +35,15 @@ authRouter.get(
   "/me",
   accessTokenMiddlewareGuard,
   async (req: RequestWithBody<UserLoginRequestProps>, res: Response) => {
-    const currentUser = await usersQueryRepositories.getCurrentUserByObjectId({
-      _id: new ObjectId(req.user.userId),
-    });
+    const { status, errorMessage, data } =
+      await usersQueryRepositories.getCurrentUserByObjectId({
+        _id: new ObjectId(req.user.userId),
+      });
 
-    res.sendStatus(201);
+    if (!data) {
+      return res.status(status).send(errorMessage);
+    }
+
+    res.sendStatus(status);
   },
 );

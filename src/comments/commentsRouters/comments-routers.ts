@@ -21,16 +21,16 @@ commentsRouters.get(
   async (req: RequestWithParams<GetCurrentCommentParams>, res: Response) => {
     const commentId = req.params.commentId;
 
-    const currentComment =
+    const { status, data, errorMessage } =
       await commentsQueryRepositories.getCurrentCommentById(
         new ObjectId(commentId),
       );
 
-    if (!currentComment) {
-      res.sendStatus(404);
+    if (!data) {
+      res.status(status).send(errorMessage);
     }
 
-    res.status(200).send(currentComment);
+    res.status(status).send(data);
   },
 );
 
@@ -49,15 +49,13 @@ commentsRouters.put(
   ) => {
     const commentId = req.params.commentId;
 
-    const currentComment =
+    const { status, data, errorMessage } =
       await commentsQueryRepositories.getCurrentCommentById(
         new ObjectId(commentId),
       );
 
-    if (!currentComment) {
-      res.sendStatus(404);
+    if (!data) {
+      res.status(status).send(errorMessage);
     }
-
-
   },
 );

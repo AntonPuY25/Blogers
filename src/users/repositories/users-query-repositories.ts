@@ -1,9 +1,19 @@
-import { CreatedUserDataForBD, GetCurrentUserByObjectIdProps } from "./interface";
+import {
+  CreatedUserDataAfterMappedForUi,
+  CreatedUserDataForBD,
+  GetCurrentUserByObjectIdProps,
+} from "./interface";
 import { usersCollection } from "../../db/db";
 import { WithId } from "mongodb";
-import { getUserMappedDataForGe } from "./users-mappers";
+import {
+  getUserMappedDataForCreate,
+  getUserMappedDataForGe,
+} from "./users-mappers";
 import { GetUsersPaginationWithSortWithSearchQuery } from "../../core/types/pagintaion-types";
-import { getPagesCount, getSkipPagesAndLimit } from "../../blogs/repositories/helpers";
+import {
+  getPagesCount,
+  getSkipPagesAndLimit,
+} from "../../blogs/repositories/helpers";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 
@@ -18,24 +28,22 @@ export const usersQueryRepositories = {
       if (currentUser) {
         return {
           status: STATUSES_CODE.Success,
-          data: currentUser,
+          data: getUserMappedDataForCreate(currentUser),
           errorMessage: undefined,
-        } as ResultObject<WithId<CreatedUserDataForBD>>;
+        } as ResultObject<CreatedUserDataAfterMappedForUi>;
       }
 
       return {
         status: STATUSES_CODE.NotFound,
         data: null,
         errorMessage: ERRORS_MESSAGES.notFoundCurrentUserById,
-      } as ResultObject
-
-
+      } as ResultObject;
     } catch (e) {
       return {
         status: STATUSES_CODE.NotFound,
         data: null,
         errorMessage: ERRORS_MESSAGES.notFoundCurrentUserById,
-      } as ResultObject
+      } as ResultObject;
     }
   },
 

@@ -10,7 +10,7 @@ import {
   USERS_PATH
 } from "./core/paths/paths";
 import { usersRouter } from "./users/routers/user-routers";
-import { authRouter } from "./auth/routers/routers";
+import { authRouter } from "./auth/routers/auth-routers";
 import { commentsRouters } from "./comments/commentsRouters/comments-routers";
 
 export const setupApp = (app: Express) => {

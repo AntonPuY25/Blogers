@@ -28,17 +28,17 @@ describe("Posts tests", () => {
       email: "test@mai.ru",
     };
 
-    const createdBlog = await request(app)
+    const createdUser = await request(app)
       .post("/users")
       .set("Authorization", `Basic ${basicAuthToken}`)
       .send(testNewUserData)
       .expect(201);
 
-    expect(createdBlog.body.login).toBe(testNewUserData.login);
-    expect(createdBlog.body.email).toBe(testNewUserData.email);
+    expect(createdUser.body.login).toBe(testNewUserData.login);
+    expect(createdUser.body.email).toBe(testNewUserData.email);
 
     await request(app)
-      .delete(`/users/${createdBlog.body.id}`)
+      .delete(`/users/${createdUser.body.id}`)
       .set("Authorization", `Basic ${basicAuthToken}`)
       .expect(204);
 

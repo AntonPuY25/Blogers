@@ -223,7 +223,7 @@ postRouter.post(
     const { status, errorMessage, data } =
       await commentsService.createCommentForPost({
         content,
-        userId: userData._id.toString(),
+        userId: userData.id,
         userLogin: userData.login,
         postId: currentPostId,
       });
