@@ -1,7 +1,10 @@
 import { commentsCollection } from "../../db/db";
 import { ObjectId, WithId } from "mongodb";
 import { CommentForPostForBd, MappedCommentForPostForBd } from "./interface";
-import { getCurrentCommentWithoutObjectIdAndPostId } from "./comments-mappers";
+import {
+  getCurrentCommentsForPostWithoutObjectIdAndPostId,
+  getCurrentCommentWithoutObjectIdAndPostId,
+} from "./comments-mappers";
 import { GetAllCommentsForCurrentPostProps } from "../../posts/repositories/interface";
 import {
   getPagesCount,
@@ -64,7 +67,7 @@ export const commentsQueryRepositories = {
       page: Number(pageNumber),
       pageSize: Number(pageSize),
       totalCount,
-      items,
+      items: getCurrentCommentsForPostWithoutObjectIdAndPostId(items),
     };
   },
 };
