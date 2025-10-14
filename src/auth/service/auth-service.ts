@@ -31,7 +31,7 @@ export const authService = {
     }
 
     return {
-      status: STATUSES_CODE.Success,
+      status: STATUSES_CODE.Unauthorized,
       errorMessage: ERRORS_MESSAGES.notFoundCurrentUserById,
     } as ResultObject;
   },
