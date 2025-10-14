@@ -8,7 +8,9 @@ import { BlogType } from "../../core/types/db-types";
 export const blogsRepository = {
   createBlog: async (newBlog: BlogType) => {
     try {
-      return await blogsCollection.insertOne(newBlog);
+      const createdBlog=  await blogsCollection.insertOne(newBlog);
+
+      return createdBlog.insertedId;
     } catch (error) {
       console.warn(error);
     }

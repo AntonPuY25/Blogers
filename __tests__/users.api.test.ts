@@ -7,7 +7,7 @@ import {
 } from "../src/core/middlewares/auth-middleware";
 import { UsersDataForCreateRequest } from "../src/users/routers/types";
 
-describe("Posts tests", () => {
+describe("Users tests", () => {
   const app = express();
 
   setupApp(app);

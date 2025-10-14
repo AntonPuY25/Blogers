@@ -7,6 +7,8 @@ import {
 import { CreateBlogTypeForService } from "./types";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
+import { getCreatedBlogWithoutObjectId } from "./blogMappers";
+import { blogsQueryRepository } from "../repositories/blog-query-repository";
 
 export const blogsService = {
   createBlog: async ({
@@ -14,7 +16,7 @@ export const blogsService = {
     websiteUrl,
     description,
   }: CreateBlogTypeForService) => {
-    const newBlog: BlogType = {
+    const newBlog = {
       id: new Date().toISOString(),
       name,
       description,
@@ -34,9 +36,22 @@ export const blogsService = {
       } as ResultObject;
     }
 
+    const { data } = await blogsQueryRepository.getCurrentBlog({
+      blogId: newBlog.id,
+    });
+
+    if (!data) {
+      return {
+        errorMessage: ERRORS_MESSAGES.createdBlogErrorFormMongo,
+        status: STATUSES_CODE.BadRequest,
+        data: null,
+        extensions: [],
+      } as ResultObject;
+    }
+
     return {
       status: STATUSES_CODE.Created,
-      data: newBlog,
+      data: getCreatedBlogWithoutObjectId(data),
       extensions: [],
     } as ResultObject<BlogType>;
   },

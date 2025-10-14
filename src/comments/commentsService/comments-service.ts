@@ -40,7 +40,7 @@ export const commentsService = {
 
     return {
       data: { ...newCreatedCommentForPost, ...createdCommentId },
-      status: STATUSES_CODE.Success,
+      status: STATUSES_CODE.Created,
     } as ResultObject<WithId<CommentForPostForBd>>;
   },
 
