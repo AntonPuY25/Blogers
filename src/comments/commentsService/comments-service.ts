@@ -1,9 +1,13 @@
 import { commentsRepository } from "../commentsRepository/comments-repository";
-import { CreateCommentForPostFromServiceProps, UpdatedCommentServiceProps } from "./interface";
+import {
+  CreateCommentForPostFromServiceProps,
+  UpdatedCommentServiceProps,
+} from "./interface";
 import { CommentForPostForBd } from "../commentsRepository/interface";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
+import { commentsQueryRepositories } from "../commentsRepository/comments-query-repository";
 
 export const commentsService = {
   createCommentForPost: async ({
@@ -40,7 +44,32 @@ export const commentsService = {
     } as ResultObject<WithId<CommentForPostForBd>>;
   },
 
-  updateCommentForPost: async ({}:UpdatedCommentServiceProps)=>{
+  updateCommentForPost: async (
+    commentUpdateData: UpdatedCommentServiceProps,
+  ) => {
+    const { data } = await commentsQueryRepositories.getCurrentCommentById(
+      new ObjectId(commentUpdateData.commentId),
+    );
 
-  }
+    if (!data) {
+      return {
+        status: STATUSES_CODE.NotFound,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentCommentById,
+      } as ResultObject;
+    }
+
+    if (data.commentatorInfo.userId !== commentUpdateData.userId) {
+      return {
+        status: STATUSES_CODE.Forbidden,
+        errorMessage: ERRORS_MESSAGES.userTryUpdateWrongComment,
+      } as ResultObject;
+    }
+
+    await commentsRepository.updatedCommentById(commentUpdateData);
+
+    return {
+      data: null,
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
+  },
 };

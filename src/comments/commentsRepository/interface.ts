@@ -1,4 +1,7 @@
-import { CommentForPostFromBdCommentatorInfo } from "../commentsService/interface";
+import {
+  CommentForPostFromBdCommentatorInfo,
+  UpdatedCommentServiceProps,
+} from "../commentsService/interface";
 import { ObjectId } from "mongodb";
 
 export interface CommentForPostForBd {
@@ -8,6 +11,10 @@ export interface CommentForPostForBd {
   postId: string;
 }
 
-export interface MappedCommentForPostForBd  extends Omit<CommentForPostForBd, "postId"> {
+export interface MappedCommentForPostForBd
+  extends Omit<CommentForPostForBd, "postId"> {
   id: string;
 }
+
+export interface UpdatedCommentByIdRepository
+  extends Omit<UpdatedCommentServiceProps, "userId"> {}

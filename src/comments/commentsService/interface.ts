@@ -14,4 +14,6 @@ export interface CommentForPostFromBdCommentatorInfo
 
 export interface UpdatedCommentServiceProps {
   commentId: string;
+  content: string;
+  userId: string;
 }

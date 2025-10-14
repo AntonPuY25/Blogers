@@ -56,6 +56,6 @@ export const blogIdPostRequiredValidate = body("blogId")
 export const commentContentRequiredValidate = body("content")
   .isLength({ min: 20, max: 300 })
   .withMessage({
-    message: "Content for comment field is Required",
+    message: "Content should be min 20 - max 300 symbols and  field is Required",
     field: "content",
   });

@@ -7,6 +7,7 @@ export const ERRORS_MESSAGES = {
   notFoundCurrentPostById: 'Не удалось найти нужный пост',
   notFoundCurrentUserById: 'Не удалось найти данного пользователя',
   notFoundCurrentCommentById: 'Не удалось найти нужный комментарий',
+  userTryUpdateWrongComment: 'Вы пытаетесь обновить чужой комментарий',
 }
 
 export enum STATUSES_CODE {

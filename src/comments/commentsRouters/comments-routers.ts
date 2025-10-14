@@ -49,18 +49,21 @@ commentsRouters.put(
     res: Response,
   ) => {
     const commentId = req.params.commentId;
+    const commentContent = req.body.content;
+      const currentUserId = req.user.userId;
 
-    const { status, data, errorMessage } =
-      await commentsQueryRepositories.getCurrentCommentById(
-        new ObjectId(commentId),
-      );
+    const { status, errorMessage } = await commentsService.updateCommentForPost(
+      {
+        commentId,
+        content: commentContent,
+        userId: currentUserId || '',
+      },
+    );
 
-    if (!data) {
+    if (errorMessage) {
       return res.status(status).send(errorMessage);
     }
 
-    const test = await commentsService.updateCommentForPost({
-      commentId: data.id,
-    });
+    return res.sendStatus(status);
   },
 );
