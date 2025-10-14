@@ -4,6 +4,8 @@ import { PostType } from "../../core/types/db-types";
 import { UpdatePostRepository } from "../../core/types/repositories-types";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
+import { createPostMapper } from "./postMappers";
+import { postQueryRepository } from "../repositories/post-query-repository";
 
 export const postService = {
   createNewPost: async ({
@@ -13,7 +15,7 @@ export const postService = {
     blogId,
     blogName,
   }: CreatePostRequest) => {
-    const newPost: PostType = {
+    const newPost = {
       content,
       shortDescription,
       title,
@@ -33,8 +35,19 @@ export const postService = {
       } as ResultObject;
     }
 
+    const { data, errorMessage, status } =
+      await postQueryRepository.getPostById(newPost.id);
+
+    if (!data) {
+      return {
+        data: null,
+        errorMessage,
+        status,
+      } as ResultObject;
+    }
+
     return {
-      data: newPost,
+      data: createPostMapper(data),
       status: STATUSES_CODE.Created,
       errorMessage: undefined,
     } as ResultObject<PostType>;
@@ -68,7 +81,7 @@ export const postService = {
   },
 
   deletePost: async (postId: string) => {
-    const deletedPostCount =  await postRepository.deletePost(postId);
+    const deletedPostCount = await postRepository.deletePost(postId);
 
     if (!deletedPostCount) {
       return {

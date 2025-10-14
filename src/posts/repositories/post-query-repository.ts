@@ -6,7 +6,7 @@ import {
   getSkipPagesAndLimit,
 } from "../../blogs/repositories/helpers";
 import { ResultObject } from "../../core/types/result-object";
-import { BlogType } from "../../core/types/db-types";
+import { BlogType, PostType } from "../../core/types/db-types";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 import { WithId } from "mongodb";
 
@@ -77,7 +77,7 @@ export const postQueryRepository = {
         status: STATUSES_CODE.Success,
         data: currentPost,
         errorMessage: undefined,
-      } as ResultObject<WithId<BlogType>>;
+      } as ResultObject<WithId<PostType>>;
     }
 
     return {
