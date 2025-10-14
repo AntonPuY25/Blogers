@@ -6,6 +6,7 @@ import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
 import { createPostMapper } from "./postMappers";
 import { postQueryRepository } from "../repositories/post-query-repository";
+import { blogsQueryRepository } from "../../blogs/repositories/blog-query-repository";
 
 export const postService = {
   createNewPost: async ({
@@ -13,16 +14,28 @@ export const postService = {
     shortDescription,
     title,
     blogId,
-    blogName,
   }: CreatePostRequest) => {
-    const newPost = {
+    const {
+      data: currentBlogData,
+      errorMessage: currentBlogErrorMessage,
+      status: currentBlogStatus,
+    } = await blogsQueryRepository.getCurrentBlog({ blogId });
+
+    if (!currentBlogData?.id) {
+      return {
+        errorMessage: currentBlogErrorMessage,
+        status: currentBlogStatus,
+      } as ResultObject;
+    }
+
+    const newPost: PostType = {
       content,
       shortDescription,
       title,
-      blogId,
+      blogId: currentBlogData.id,
       id: new Date().toISOString(),
-      blogName,
       createdAt: new Date().toISOString(),
+      blogName: currentBlogData.name,
     };
 
     const createdPostObjectId = await postRepository.createNewPost(newPost);
