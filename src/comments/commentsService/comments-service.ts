@@ -1,6 +1,6 @@
 import { commentsRepository } from "../commentsRepository/comments-repository";
 import {
-  CreateCommentForPostFromServiceProps,
+  CreateCommentForPostFromServiceProps, DeleteCommentServiceProps,
   UpdatedCommentServiceProps,
 } from "./interface";
 import { CommentForPostForBd } from "../commentsRepository/interface";
@@ -66,6 +66,35 @@ export const commentsService = {
     }
 
     await commentsRepository.updatedCommentById(commentUpdateData);
+
+    return {
+      data: null,
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
+  },
+
+  deleteCommentById: async (
+      commentDeleteData: DeleteCommentServiceProps,
+  ) => {
+    const { data } = await commentsQueryRepositories.getCurrentCommentById(
+        new ObjectId(commentDeleteData.commentId),
+    );
+
+    if (!data) {
+      return {
+        status: STATUSES_CODE.NotFound,
+        errorMessage: ERRORS_MESSAGES.notFoundCurrentCommentById,
+      } as ResultObject;
+    }
+
+    if (data.commentatorInfo.userId !== commentDeleteData.userId) {
+      return {
+        status: STATUSES_CODE.Forbidden,
+        errorMessage: ERRORS_MESSAGES.userTryUpdateWrongComment,
+      } as ResultObject;
+    }
+
+    await commentsRepository.deleteComment(commentDeleteData.commentId);
 
     return {
       data: null,

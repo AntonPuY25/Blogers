@@ -17,3 +17,5 @@ export interface UpdatedCommentServiceProps {
   content: string;
   userId: string;
 }
+
+export interface DeleteCommentServiceProps extends Omit<UpdatedCommentServiceProps, "content"> {}

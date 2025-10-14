@@ -50,13 +50,13 @@ commentsRouters.put(
   ) => {
     const commentId = req.params.commentId;
     const commentContent = req.body.content;
-      const currentUserId = req.user.userId;
+    const currentUserId = req.user.userId;
 
     const { status, errorMessage } = await commentsService.updateCommentForPost(
       {
         commentId,
         content: commentContent,
-        userId: currentUserId || '',
+        userId: currentUserId || "",
       },
     );
 
@@ -65,5 +65,29 @@ commentsRouters.put(
     }
 
     return res.sendStatus(status);
+  },
+);
+
+commentsRouters.delete(
+  "/:commentId",
+  accessTokenMiddlewareGuard,
+  objectIdValidateMiddleware,
+  getCommentsValidationErrorsMiddieWare,
+  async (req: RequestWithParams<GetCurrentCommentParams>, res: Response) => {
+    const commentId = req.params.commentId;
+    const currentUserId = req.user.userId;
+
+      const { status, errorMessage } = await commentsService.deleteCommentById(
+          {
+              commentId,
+              userId: currentUserId || "",
+          },
+      );
+
+      if (errorMessage) {
+          return res.status(status).send(errorMessage);
+      }
+
+      return res.sendStatus(status);
   },
 );
