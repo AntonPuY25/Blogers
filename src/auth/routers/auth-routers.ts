@@ -10,6 +10,7 @@ import {
 import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
 import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
 import { ObjectId } from "mongodb";
+import { nodeMailerService } from "../../nodeMailer/nodeMailerService/node-mailer-service";
 
 export const authRouter = Router();
 
@@ -43,6 +44,8 @@ authRouter.get(
     if (!data) {
       return res.status(status).send(errorMessage);
     }
+
+    nodeMailerService.sendTestMail()
 
     res.sendStatus(status);
   },
