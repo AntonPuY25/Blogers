@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { EmailAdaptersSendMail } from "./interface";
 
 export const emailAdapters = {
-  send: async ({ html, text, subject, email }: EmailAdaptersSendMail) => {
+  sendEmailRegistration: async ({text, subject, email }: EmailAdaptersSendMail) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -12,11 +12,10 @@ export const emailAdapters = {
     });
 
     return await transporter.sendMail({
-      from: '"Example Team" <team@example.com>',
+      from: '"Super Back end Team" <puy@bk.ru>',
       to: email,
       subject,
       text,
-      html,
     });
   },
 };

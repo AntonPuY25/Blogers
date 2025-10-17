@@ -27,6 +27,14 @@ export const getUserValidationErrorsMiddieWare = (
 export const loginUserMaxAndMinLengthValidate = body("login")
   .trim()
   .isLength({ min: 3, max: 10 })
+  .custom((value) => {
+    const patternLoginData = /^[a-zA-Z0-9_-]*$/;
+    if (!patternLoginData.test(value)) {
+      throw new Error("Login should be valid");
+    }
+
+    return true;
+  })
   .withMessage({
     message: "Login field is Required and  must be maximum 15 symbols",
     field: "login",
@@ -64,3 +72,4 @@ export const userIdLengthValidate = param("userId")
     field: "id",
     code: 404,
   });
+

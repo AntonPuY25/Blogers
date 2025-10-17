@@ -57,14 +57,12 @@ export const blogsQueryRepository = {
         data: null,
         status: STATUSES_CODE.NotFound,
         errorMessage: ERRORS_MESSAGES.notFoundCurrentBlogById,
-        extensions: [],
       } as ResultObject;
     }
 
     return {
       data: blog,
       status: STATUSES_CODE.Success,
-      extensions: [],
     } as ResultObject<WithId<BlogType>>;
   },
 };

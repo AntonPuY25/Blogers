@@ -1,6 +1,7 @@
 import { CreatedUserDataForBD } from "./interface";
 import { usersCollection } from "../../db/db";
 import { InsertOneResult, ObjectId } from "mongodb";
+import { UserRegistrationServiceForBd } from "../../auth/service/interface";
 
 export const userRepository = {
   createUser: async (newUser: CreatedUserDataForBD) => {
@@ -9,7 +10,6 @@ export const userRepository = {
         await usersCollection.insertOne(newUser);
 
       return createdUserResult.insertedId;
-
     } catch (error) {
       console.error(error);
     }
@@ -17,10 +17,17 @@ export const userRepository = {
 
   deleteUserById: async (_id: ObjectId) => {
     try {
-      const createdUserResult = await usersCollection.deleteOne({_id});
+      const createdUserResult = await usersCollection.deleteOne({ _id });
 
       return createdUserResult.deletedCount;
+    } catch (error) {
+      console.error(error);
+    }
+  },
 
+  registerUser: async (newUser: UserRegistrationServiceForBd) => {
+    try {
+      await usersCollection.insertOne(newUser);
     } catch (error) {
       console.error(error);
     }

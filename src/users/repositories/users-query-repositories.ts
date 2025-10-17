@@ -110,4 +110,12 @@ export const usersQueryRepositories = {
       items: getUserMappedDataForGe(items),
     };
   },
+
+  getCurrentUserByEmail: async (email: string) => {
+    try {
+      return await usersCollection.findOne({email})
+    } catch (e) {
+      console.log(e);
+    }
+  },
 };

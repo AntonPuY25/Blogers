@@ -32,7 +32,6 @@ export const blogsService = {
         errorMessage: ERRORS_MESSAGES.createdBlogErrorFormMongo,
         status: STATUSES_CODE.BadRequest,
         data: null,
-        extensions: [],
       } as ResultObject;
     }
 
@@ -45,14 +44,12 @@ export const blogsService = {
         errorMessage: ERRORS_MESSAGES.createdBlogErrorFormMongo,
         status: STATUSES_CODE.BadRequest,
         data: null,
-        extensions: [],
       } as ResultObject;
     }
 
     return {
       status: STATUSES_CODE.Created,
       data: getCreatedBlogWithoutObjectId(data),
-      extensions: [],
     } as ResultObject<BlogType>;
   },
 

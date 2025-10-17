@@ -1,16 +1,17 @@
-import { Response, Router } from "express";
+import e, { Response, Router } from "express";
 import { RequestWithBody } from "../../core/types/basic-url-types";
-import { UserLoginRequestProps } from "./interface";
+import { UserLoginRequestProps, UserRegistrationPayload } from "./interface";
 import { authService } from "../service/auth-service";
 import {
+  emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   loginOrEmailUserMaxAndMinLengthValidate,
+  loginUserMaxAndMinLengthValidate,
   passwordUserMaxAndMinLengthValidate,
 } from "../../core/middlewares/validate-users-middleware";
 import { accessTokenMiddlewareGuard } from "../../guards/access-token-guard";
 import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
 import { ObjectId } from "mongodb";
-import { nodeMailerService } from "../../nodeMailer/nodeMailerService/node-mailer-service";
 
 export const authRouter = Router();
 
@@ -45,7 +46,22 @@ authRouter.get(
       return res.status(status).send(errorMessage);
     }
 
-    nodeMailerService.sendTestMail()
+    res.sendStatus(status);
+  },
+);
+
+authRouter.post(
+  "/registration",
+  loginUserMaxAndMinLengthValidate,
+  passwordUserMaxAndMinLengthValidate,
+  emailUserMaxAndMinLengthValidate,
+  getUserValidationErrorsMiddieWare,
+  async (req: RequestWithBody<UserRegistrationPayload>, res: Response) => {
+    const { status, extensions } = await authService.registration(req.body);
+
+    if (extensions) {
+      return res.status(status).send({ errorsMessages: [extensions] });
+    }
 
     res.sendStatus(status);
   },

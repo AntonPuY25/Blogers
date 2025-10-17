@@ -1,7 +1,8 @@
 import { emailManager } from "../managers/email-manager";
+import { SendRegisterMailServiceProps } from "./interfaces";
 
 export const nodeMailerService = {
-  sendTestMail: async () => {
-    await emailManager.testSendMail("rockmenpuy24@gmail.com");
+  sendRegisterMail: async (data: SendRegisterMailServiceProps) => {
+    await emailManager.sendMailRegistration(data);
   },
 };

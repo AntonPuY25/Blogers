@@ -25,7 +25,7 @@ export const postsCollection = dbBlogs.collection(BLOGS_COLLECTION_NAME.POSTS);
 export const commentsCollection = dbBlogs.collection<CommentForPostForBd>(
   BLOGS_COLLECTION_NAME.COMMENTS,
 );
-export const usersCollection = dbBlogs.collection<CreatedUserDataForBD>(
+export const usersCollection = dbBlogs.collection<any>(
   BLOGS_COLLECTION_NAME.USERS,
 );
 
