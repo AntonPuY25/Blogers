@@ -16,6 +16,7 @@ import {
 } from "../../blogs/repositories/helpers";
 import { ResultObject } from "../../core/types/result-object";
 import { ERRORS_MESSAGES, STATUSES_CODE } from "../../core/types/constants";
+import { EmailConfirmationPayload } from "../../auth/routers/interface";
 
 export const usersQueryRepositories = {
   getCurrentUserByObjectId: async ({ _id }: GetCurrentUserByObjectIdProps) => {
@@ -113,7 +114,17 @@ export const usersQueryRepositories = {
 
   getCurrentUserByEmail: async (email: string) => {
     try {
-      return await usersCollection.findOne({email})
+      return await usersCollection.findOne({ email });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
+  getCurrentUserByCode: async ({ code }: EmailConfirmationPayload) => {
+    try {
+      return await usersCollection.findOne({
+        "emailConfirmation.confirmationCode": code,
+      });
     } catch (e) {
       console.log(e);
     }

@@ -10,3 +10,7 @@ export interface UserRegistrationPayload {
   password: string;
   email: string;
 }
+
+export interface EmailConfirmationPayload {
+  code: string;
+}

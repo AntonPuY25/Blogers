@@ -1,4 +1,7 @@
-import { UserLoginRequestProps } from "../routers/interface";
+import {
+  EmailConfirmationPayload,
+  UserLoginRequestProps,
+} from "../routers/interface";
 import bcrypt from "bcrypt";
 import { usersQueryRepositories } from "../../users/repositories/users-query-repositories";
 import { jwtService } from "../../jwtService/jwt-service";
@@ -14,6 +17,7 @@ import { randomUUID } from "crypto";
 import { add } from "date-fns";
 import { userRepository } from "../../users/repositories/user-repository";
 import { nodeMailerService } from "../../nodeMailer/nodeMailerService/node-mailer-service";
+import { WithId } from "mongodb";
 
 export const authService = {
   auth: async ({ password, loginOrEmail }: UserLoginRequestProps) => {
@@ -55,7 +59,7 @@ export const authService = {
     const currentUserByEmail =
       await usersQueryRepositories.getCurrentUserByEmail(email);
 
-    console.log(currentUserByEmail,'currentUserByEmail');
+    console.log(currentUserByEmail, "currentUserByEmail");
 
     if (currentUserByEmail) {
       return {
@@ -107,7 +111,39 @@ export const authService = {
       } as ResultObject<string>;
     }
 
-    return  {
+    return {
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
+  },
+
+  registrationConfirmation: async ({ code }: EmailConfirmationPayload) => {
+    const currentUserByCode: WithId<UserRegistrationServiceForBd> =
+      await usersQueryRepositories.getCurrentUserByCode({ code });
+
+    if (!currentUserByCode) {
+      return {
+        status: STATUSES_CODE.BadRequest,
+        extensions: {
+          message: "Bad request, current user does not exist",
+          field: "Code",
+        },
+      } as ResultObject;
+    }
+
+    if (currentUserByCode.emailConfirmation.expirationDate < new Date()) {
+      return {
+        status: STATUSES_CODE.BadRequest,
+        extensions: {
+          message:
+            "Bad request, expirationDate was expired, can try email resending",
+          field: "ExpirationDate",
+        },
+      } as ResultObject;
+    }
+
+    await userRepository.updateUserEmailIsConfirmed(currentUserByCode._id);
+
+    return {
       status: STATUSES_CODE.NoContent,
     } as ResultObject;
   },

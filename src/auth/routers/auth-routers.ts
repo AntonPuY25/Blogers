@@ -1,8 +1,13 @@
 import e, { Response, Router } from "express";
 import { RequestWithBody } from "../../core/types/basic-url-types";
-import { UserLoginRequestProps, UserRegistrationPayload } from "./interface";
+import {
+  EmailConfirmationPayload,
+  UserLoginRequestProps,
+  UserRegistrationPayload,
+} from "./interface";
 import { authService } from "../service/auth-service";
 import {
+  codeRequiredLengthValidate,
   emailUserMaxAndMinLengthValidate,
   getUserValidationErrorsMiddieWare,
   loginOrEmailUserMaxAndMinLengthValidate,
@@ -65,4 +70,23 @@ authRouter.post(
 
     res.sendStatus(status);
   },
+
+  authRouter.post(
+    "/registration-confirmation",
+    codeRequiredLengthValidate,
+    getUserValidationErrorsMiddieWare,
+    async (req: RequestWithBody<EmailConfirmationPayload>, res: Response) => {
+      const { code } = req.body;
+
+      const { status, extensions } = await authService.registrationConfirmation(
+        { code },
+      );
+
+      if (extensions) {
+        return res.status(status).send({ errorsMessages: [extensions] });
+      }
+
+      res.sendStatus(status);
+    },
+  ),
 );

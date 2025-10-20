@@ -64,6 +64,14 @@ export const emailUserMaxAndMinLengthValidate = body("email")
     field: "email",
   });
 
+export const codeRequiredLengthValidate = body("code")
+  .trim()
+  .notEmpty()
+  .withMessage({
+    message: "Code field is Required",
+    field: "code",
+  });
+
 export const userIdLengthValidate = param("userId")
   .trim()
   .isLength({ min: 24, max: 24 })

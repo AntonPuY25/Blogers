@@ -32,4 +32,17 @@ export const userRepository = {
       console.error(error);
     }
   },
+
+  updateUserEmailIsConfirmed: async (_id: ObjectId) => {
+    return await usersCollection.updateOne(
+      {
+        _id,
+      },
+      {
+        $set: {
+          "emailConfirmation.isConfirmed": true,
+        },
+      },
+    );
+  },
 };
