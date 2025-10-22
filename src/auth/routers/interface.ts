@@ -14,3 +14,7 @@ export interface UserRegistrationPayload {
 export interface EmailConfirmationPayload {
   code: string;
 }
+
+export interface EmailResendingPayload {
+  email: string;
+}

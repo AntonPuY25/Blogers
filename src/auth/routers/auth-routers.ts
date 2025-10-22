@@ -1,7 +1,8 @@
-import e, { Response, Router } from "express";
+import { Response, Router } from "express";
 import { RequestWithBody } from "../../core/types/basic-url-types";
 import {
   EmailConfirmationPayload,
+  EmailResendingPayload,
   UserLoginRequestProps,
   UserRegistrationPayload,
 } from "./interface";
@@ -70,23 +71,40 @@ authRouter.post(
 
     res.sendStatus(status);
   },
+);
 
-  authRouter.post(
-    "/registration-confirmation",
-    codeRequiredLengthValidate,
-    getUserValidationErrorsMiddieWare,
-    async (req: RequestWithBody<EmailConfirmationPayload>, res: Response) => {
-      const { code } = req.body;
+authRouter.post(
+  "/registration-confirmation",
+  codeRequiredLengthValidate,
+  getUserValidationErrorsMiddieWare,
+  async (req: RequestWithBody<EmailConfirmationPayload>, res: Response) => {
+    const { code } = req.body;
 
-      const { status, extensions } = await authService.registrationConfirmation(
-        { code },
-      );
+    const { status, extensions } = await authService.registrationConfirmation({
+      code,
+    });
 
-      if (extensions) {
-        return res.status(status).send({ errorsMessages: [extensions] });
-      }
+    if (extensions) {
+      return res.status(status).send({ errorsMessages: [extensions] });
+    }
 
-      res.sendStatus(status);
-    },
-  ),
+    res.sendStatus(status);
+  },
+);
+
+authRouter.post(
+  "/registration-email-resending",
+  emailUserMaxAndMinLengthValidate,
+  getUserValidationErrorsMiddieWare,
+  async (req: RequestWithBody<EmailResendingPayload>, res: Response) => {
+    const { status, extensions } = await authService.emailResending({
+      email: req.body.email,
+    });
+
+    if (extensions) {
+      return res.status(status).send({ errorsMessages: [extensions] });
+    }
+
+    res.sendStatus(status);
+  },
 );

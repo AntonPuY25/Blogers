@@ -1,5 +1,6 @@
 import {
   EmailConfirmationPayload,
+  EmailResendingPayload,
   UserLoginRequestProps,
 } from "../routers/interface";
 import bcrypt from "bcrypt";
@@ -58,8 +59,6 @@ export const authService = {
   }: UserRegistrationServiceProps) => {
     const currentUserByEmail =
       await usersQueryRepositories.getCurrentUserByEmail(email);
-
-    console.log(currentUserByEmail, "currentUserByEmail");
 
     if (currentUserByEmail) {
       return {
@@ -142,6 +141,44 @@ export const authService = {
     }
 
     await userRepository.updateUserEmailIsConfirmed(currentUserByCode._id);
+
+    return {
+      status: STATUSES_CODE.NoContent,
+    } as ResultObject;
+  },
+
+  emailResending: async ({ email }: EmailResendingPayload) => {
+    const currentUserByEmail =
+      await usersQueryRepositories.getCurrentUserByEmail(email);
+
+    if (!currentUserByEmail) {
+      return {
+        status: STATUSES_CODE.BadRequest,
+        extensions: {
+          field: "Email",
+          message: "Users with this email is not registered",
+        },
+      } as ResultObject;
+    }
+
+    if (currentUserByEmail.emailConfirmation.isConfirmed) {
+      return {
+        status: STATUSES_CODE.BadRequest,
+        extensions: {
+          field: "isConfirmed",
+          message: "Users already confirmed",
+        },
+      } as ResultObject;
+    }
+
+    try {
+      await nodeMailerService.sendRegisterMail({
+        code: currentUserByEmail.emailConfirmation.confirmationCode,
+        email,
+      });
+    } catch (e) {
+      console.error(e);
+    }
 
     return {
       status: STATUSES_CODE.NoContent,
